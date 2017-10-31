@@ -1,0 +1,18 @@
+\section{Related work}\label{related work}
+As of today other libraries addressing similar tasks are available, {SPAMS}\footnote{\url{http://spams-devel.gforge.inria.fr/doc/html/}} (SPArse Modeling Software) \cite{Mairal2010} and the Decomposition modules of scikit-learn \cite{cichocki2009fast, lin2007}.
+
+SPAMS, implemented in C++, performs the  decomposition tasks through dictionary learning, non negative matrix factorization and sparse PCA. It offers a good set of options, but, even if it is interfaceable with Python, it is not \texttt{scikit-learn} compatible. Therefore, it cannot be integrated in \texttt{scikit-learn} pipelines. Moreover, it is non trivial to customise or extend it.
+
+The other main competitor, the decomposition module of \texttt{scikit-learn} library, implements dictionary learning and NMF but it only has few fixed penalty terms.
+
+\section{Conclusions and further work}
+
+In this work we introduced DALILA, a library for dictionary learning and representation learning. We presented its main features: the wide variety of penalties, the possibility to customise the library on specific problems, its compatibility with \texttt{scikit-learn} library, its high flexibility and its scalable architecture which allows to perform parallel parameter searching procedures.
+
+The wide variety of penalties applicable on the matrices allow the user to solve a broad range of problems. Moreover, since scientific problems can introduce more specific and new needs, the possibility to customise and adapt the library is essential.
+
+DALILA is fully compliant with one of the most complete machine learning Python libraries that is \texttt{scikit-learn}. This makes almost effortless its integration with the majority of machine learning Python pipelines.
+
+The possibility to parallelise or distribute computationally heavy routines \cite{dask}  greatly reduce the wall-clock time. Nevertheless our implementation is still basic and therefore the time performance are worse compared to the other presented libraries. In the future we plan to replace the use of \texttt{dask} with an hybrid parallelised system which will take advantage both of MPI tasks distribution and the computational acceleration given by GPUs. 
+
+Given DALILA flexibility and the existence of other Dictionary Learning related problems, we aim at extending it. The planned expansions are: 1) Discriminative Dictionary Learning \cite{mairal2009supervised}, a variant of the dictionary learning problem which includes the classification task; 2) Shift Invariant Dictionary Learning \cite{grosse2012shift} that allows the reconstruction of signals using atoms with smaller support than the original signal and 3) Total Variation penalty in combination with Lasso \cite{salzo2014alternating}.

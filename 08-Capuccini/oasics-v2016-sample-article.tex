@@ -1,0 +1,122 @@
+\documentclass[a4paper,UKenglish]{oasics-v2016}
+%This is a template for producing OASIcs articles. 
+%See oasics-v2016-manual.pdf for further information.
+%for A4 paper format use option "a4paper", for US-letter use option "letterpaper"
+%for british hyphenation rules use option "UKenglish", for american hyphenation rules use option "USenglish"
+% for section-numbered lemmas etc., use "numberwithinsect"
+ 
+\usepackage{microtype}%if unwanted, comment out or use option "draft"
+
+\usepackage[normalem]{ulem}
+
+%\graphicspath{{./graphics/}}%helpful if your graphic files are in another directory
+
+\bibliographystyle{plainurl}% the recommended bibstyle
+
+\newcommand{\edit}[1]{{\color{red} #1 }}
+
+% Author macros::begin %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{KubeNow: a cloud agnostic platform for microservice-oriented applications\footnote{This work was supported by the PhenoMeNal H2020 consortium.}}
+%\titlerunning{A Sample OASIcs Article} %optional, in case that the title is too long; the running title should fit into the top page column
+
+%% Please provide for each author the \author and \affil macro, even when authors have the same affiliation, i.e. for each author there needs to be the  \author and \affil macros
+%\author[1]{John Q. Open}
+%\author[2]{Joan R. Access}
+%\affil[1]{Dummy University Computing Laboratory, Address/City, Country\\
+%  \texttt{open@dummyuniversity.org}}
+%\affil[2]{Department of Informatics, Dummy College, Address/City, Country\\
+%  \texttt{access@dummycollege.org}}
+%\authorrunning{J.\,Q. Open and J.\,R. Access} %mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus 'et. al.'
+
+\author[1,2]{Marco Capuccini}
+\author[3]{Anders Larsson}
+\author[1]{Salman Toor}
+\author[2]{Ola Spjuth}
+%\author[1]{Ola Spjuth}
+\affil[1]{Department of Information Technology, Uppsala University\\
+  \texttt{marco.capuccini@it.uu.se}\\
+  \texttt{salman.toor@it.uu.se}}
+\affil[2]{Department of Pharmaceutical Biosciences, Uppsala University\\
+  \texttt{marco.capuccini@farmbio.uu.se}\\
+  \texttt{ola.spjuth@farmbio.uu.se}}
+\affil[3]{Department of Cell and Molecular Biology, Uppsala University\\
+  \texttt{anders.larsson@icm.uu.se}}
+  
+\authorrunning{M. Capuccini and O. Spjuth} %mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus 'et. al.'
+
+\Copyright{M. Capuccini and O. Spjuth}%mandatory, please use full first names. OASIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
+
+\subjclass{D.2.11 Software Architectures}% mandatory: Please choose ACM 1998 classifications from http://www.acm.org/about/class/ccs98-html . E.g., cite as "F.1.1 Models of Computation". 
+\keywords{Microservices; Cloud computing; Infrastructure as Code; Docker; Kubernetes}% mandatory: Please provide 1-5 keywords
+% Author macros::end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Editor-only macros:: begin (do not touch as author)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\EventEditors{John Q. Open and Joan R. Acces}
+\EventNoEds{2}
+\EventLongTitle{42nd Conference on Very Important Topics (CVIT 2016)}
+\EventShortTitle{CVIT 2016}
+\EventAcronym{CVIT}
+\EventYear{2016}
+\EventDate{December 24--27, 2016}
+\EventLocation{Little Whinging, United Kingdom}
+\EventLogo{}
+\SeriesVolume{42}
+\ArticleNo{23}
+% Editor-only macros::end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+
+KubeNow is a platform for rapid and continuous deployment of microservice-based applications over cloud infrastructure. Within the field of software engineering, the microservice-based architecture is a methodology in which complex applications are divided into smaller, more narrow services. These services are independently deployable and compatible with each other like building blocks. These blocks can be combined in multiple ways, according to specific use cases. Microservices are designed around a few concepts: they offer a minimal and complete set of features, they are portable and platform independent, they are accessible through language agnostic APIs and they are encouraged to use standard data formats. These characteristics promote separation of concerns, isolation and interoperability, while coupling nicely with test-driven development. Among many others, some well-known companies that build their software around microservices are: Google, Amazon, PayPal Holdings Inc. and Netflix \cite{biomicro}. 
+
+% Cutting on this, to give more weight to the work we have done
+%Software containers and language agnostic APIs, which constitute the enabling underlying technology for microservices, have been available for decades \cite{jails,soap,rest}. Nevertheless, the process of building and orchestrating microservices over computer clusters, or even within a single machine, introduces a layer of complexity that is difficult to cope with. Software frameworks that ease this process appeared in the open source ecosystem only recently, giving place to a massive and quick adoption in the information technology industry. Among many others, some well-known companies that build their software around microservices are: Google, Amazon, PayPal Holdings Inc. and Netflix \cite{biomicro}. 
+
+Cloud computing is a new technology trend that enables the allocation of virtual infrastructure on demand, giving place to a new business model where organizations can purchase resources with a pay-per-use pricing arrangement \cite{clouds}. Microservices in cloud environments can help to build scalable and resilient applications, with the goal of maximing resource usage and reducing costs. At the time of writing, Docker and Kubernetes are the most broadly adopted container engine and container orchestration framework \cite{docker,kubernetes}. Even though these software tools ease microcroservices operations considerably, their setup and configuration is still complex, tedious and time consuming. When allocating cloud resources on demand this becomes a critical issue, since applications need to be continuously deployed and scaled, possibly over different cloud providers, to minimize infrastructure costs. This new challenging way of provisioning infrastructure was the main motivation for the development of KubeNow.
+
+% Cutting on this due to 2 pages limit
+%Some commercial and open source products to automate Docker/Kubernetes deployment on cloud exist \cite{tectonic,gce,kops,kargo}, but their adoption is usually cost prohibitive and/or tightly coupled to a few cloud providers. Furthermore, none of the available open source deployment tools covers the application layer deployment, which can be nontrivial and time consuming. 
+
+KubeNow provides the means to rapidly deploy fully configured clusters, automating Docker and Kubernetes configuration, while providing a mechanism for the application layer setup. We designed KubeNow using the Infrastructure as Code (IaC) paradigm, meaning that the virtual resources and the provisioning process are defined as machine-readable language. A natural consequence of this choice is that KubeNow is immutable and repeatable over different cloud providers, being cloud agnostic in this sense. In addition, IaC enables infrastructure version control and collaborative development. 
+
+KubeNow has been adopted by the PhenoMeNal H2020 consortium as the platform used to launch on demand Cloud Research Environments (CRE) \cite{phenomenal}. The PhenoMeNal CRE allows for running reproducible large-scale medical metabolomics analysis. In addition, we are currently developing additional software layers for large-scale analysis on top of KubeNow including: Apache Spark \cite{spark}, Pachyderm \cite{pachyderm} and Slurm \cite{slurm}. KubeNow supports Amazon Web Services \cite{aws}, Google Compute Engine \cite{gcloud} and OpenStack \cite{openstack}. The software is generally applicable and publicly available as open source on GitHub \cite{kubenow}.
+
+ \end{abstract}
+
+%\section{Typesetting instructions -- please read carefully}
+%Please comply with the following instructions when preparing your article for a OASIcs proceedings volume. 
+%\begin{itemize}
+%\item Use pdflatex and an up-to-date LaTeX system.
+%\item Use further LaTeX packages only if required. Avoid usage of packages like \verb+enumitem+, \verb+enumerate+, \verb+cleverref+. Keep it simple, i.e. use as few additional packages as possible.
+%\item Add custom made macros carefully and only those which are needed in the article (i.e., do not simply add your convolute of macros collected over the years).
+%\item Do not use a different main font. For example, the usage of the \verb+times+-package is forbidden.
+%\item Provide full author names (especially with regard to the first name) in the \verb+\author+ macro and in the \verb+\Copyright+ macro.
+%\item Fill out the \verb+\subjclass+ and \verb+\keywords+ macros. For the \verb+\subjclass+, please refer to the ACM classification at %\url{http://www.acm.org/about/class/ccs98-html}.
+%\item Take care of suitable linebreaks and pagebreaks. No overfull \verb+\hboxes+ should occur in the warnings log.
+%\item Provide suitable graphics of at least 300dpi (preferrably in pdf format).
+%\item Use the provided sectioning macros: \verb+\section+, \verb+\subsection+, \verb+\subsection*+, \verb+\paragraph+, \verb+\subparagraph*+, ... ``Self-made'' sectioning commands (for example, \verb+\noindent{\bf My+ \verb+subparagraph.}+ will be removed and replaced by standard OASIcs style sectioning commands.
+%\item Do not alter the spacing of the  \verb+oasics-v2016.cls+ style file. Such modifications will be removed.
+%\item Do not use conditional structures to include/exclude content. Instead, please provide only the content that should be published -- in one file -- and nothing else.
+%\item Remove all comments, especially avoid commenting large text blocks and using \verb+\iffalse+ $\ldots$ \verb+\fi+ constructions.
+%\item Keep the standard style (\verb+plainurl+) for the bibliography as provided by the\linebreak \verb+oasics-v2016.cls+ style file.
+%\item Use BibTex and provide exactly one BibTex file for your article. The BibTex file should contain only entries that are referenced in the article. Please make sure that there are no errors and warnings with the referenced BibTex entries.
+%\item Use a spellchecker to get rid of typos.
+%\item A manual for the OASIcs style is available at \url{http://drops.dagstuhl.de/styles/oasics/oasics-v2016-authors/oasics-v2016-manual.pdf}.
+%\end{itemize}
+
+%%
+%% Bibliography
+%%
+
+%% Either use bibtex (recommended), 
+
+\bibliography{oasics-v2016-sample-article}
+
+%% .. or use the thebibliography environment explicitely
+
+
+
+\end{document}

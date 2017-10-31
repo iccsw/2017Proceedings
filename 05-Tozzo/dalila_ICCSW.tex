@@ -1,0 +1,226 @@
+\documentclass[a4paper,UKenglish]{oasics}
+
+\usepackage{microtype}%if unwanted, comment out or use option "draft"
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{algorithm}
+\usepackage{hyperref}
+\usepackage[noend]{algpseudocode}
+\usepackage{todonotes}
+\usepackage{bbm}
+
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+   % basicstyle=\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\newcommand{\argmin}{\operatornamewithlimits{argmin}}
+
+
+\graphicspath{{./images/}}
+
+\bibliographystyle{plain}
+
+% Author macros::begin %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{Hey there's DALILA: a DictionAry LearnIng LibrAry}
+\titlerunning{DALILA: A DictionAry LearnIng LibrAry}
+
+\author[1]{Veronica Tozzo}
+\author[1]{Vanessa D'Amario}
+\author[1]{Annalisa Barla}
+\affil[1]{Department of Informatics, Bioengineering, Robotics and System Engineering
+(DIBRIS), University of Genoa\\ Genoa, I-16146, Italy\\
+\href{mailto:\{veronica.tozzo, vanessa.damario\}@dibris.unige.it}{\{veronica.tozzo, vanessa.damario\}@dibris.unige.it} \\
+\href{mailto:annalisa.barlao@unige.it}{annalisa.barla@unige.it}}
+\authorrunning{V. Tozzo, V. D'Amario and A. Barla}%mandatory.
+
+\Copyright{Veronica Tozzo and Vanessa D'Amario}%mandatory. OASIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
+
+\subjclass{G.1.6 Optimization, D.1.3 Concurrent Programming, D.2.2 Design Tools and Techniques}  %please refer to \url{http://www.acm.org/about/class/ccs98-html}}% mandatory: Please choose ACM 1998 classifications from http://www.acm.org/about/class/ccs98-html . E.g., cite as "F.1.1 Models of Computation".
+\keywords{Machine learning, dictionary learning, representation learning, alternating proximal gradient descent, parallel computing}% mandatory: Please provide 1-5 keywords
+% Author macros::end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Editor-only macros:: begin (do not touch as author)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\serieslogo{}%please provide filename (without suffix)
+\volumeinfo%(easychair interface)
+  {Billy Editor and Bill Editors}% editors
+  {2}% number of editors: 1, 2, ....
+  {Conference/workshop/symposium title on which this volume is based on}% event
+  {1}% volume
+  {1}% issue
+  {1}% starting page number
+\EventShortName{}
+\DOI{10.4230/OASIcs.xxx.yyy.p}% to be completed by the volume editor
+% Editor-only macros::end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Dictionary Learning and Representation Learning are machine learning methods for decomposition, denoising and reconstruction of data with a wide range of applications such as text recognition, image processing and biological processes understanding. In this work we present DALILA, a scientific Python library for regularised dictionary learning and regularised representation learning that allows to impose prior knowledge, if available.
+DALILA, differently from the others available libraries for this purpose, is flexible and  modular. DALILA is  designed to be easily extended for custom needs. Moreover, it is compliant with the most widespread ML Python library and this allows for a straightforward usage and integration.
+We here present and discuss the theoretical aspects and discuss its strength points and
+implementation.
+%The library is implemented in Python and it is publicly available for download at github link \texttt{https://github.com/slipguru/dalila} or via pip and conda install. The library is presented with example and documentation.
+\end{abstract}
+
+
+\section{Introduction}
+%Dictionary learning is a decomposition method that, given a data matrix, finds two new matrices: one of basic signals, the dictionary, and one of their relative weight, the so called coefficients. In Representation Learning, instead, the dictionary is given and the problem is to find the coefficients that better approximate the data.
+%
+%Due to their unsupervised nature and to their minor spread, fewer implementations for DL and SC with respect to other tasks are accessible.
+
+%Matrix decomposition is
+Nowadays many optimisation algorithms and libraries are freely available for the most disparate machine learning applications. For example some machine learning tasks, as classification, have hundreds of algorithms and libraries implementations. This is not the case for \emph{Dictionary Learning} (DL) \cite{lee1999learning, lin2007,  Mairal2010, mairal2009supervised,  rakotomamonjy2013direct, salzo2014alternating, tosic2011dictionary} and its specialisation \emph{Representation Learning} (RL) \cite{6472238, 4385788}, which are designed for matrix decomposition and reconstruction.
+They can be applied on many application domains such as signal processing \cite{tosic2011dictionary}, image processing \cite{ravishankar2011mr}, bioinformatics \cite{alexandrov2013deciphering} and text-recognition \cite{aggarwal2012mining}. Even though dimensionality reduction methods such as PCA \cite{jolliffe2002principal} and ICA \cite{hyvarinen2004independent} may be used to solve these tasks, dictionary learning is preferable when more emphasis on the interpretability of the dictionary is required  \cite{lee1999learning}. %, \textcolor{red}{see \cite{lee1999learning} for more details about the comparison of the methods}.
+
+In this paper we present DALILA, a Python library for DL and RL. The optimisation is based on \emph{alternating proximal gradient descent} \cite{bolte2014proximal}, which allows flexibility on the minimisation problem and therefore enables the imposition of prior knowledge.
+Designed to be extremely flexible and modular, DALILA can be easily extended differently from the other available libraries.
+
+As regards the implementation, the library is compatible with the \texttt{scikit-learn} Python library and it supports the distribution of the most computationally heavy routines across different machines \cite{dask}.%; moreover the most computationally heavy routines of the library can be optionally distributed greatly reducing the total wall-clock time.
+
+The remainder of this paper is organised as follows. In Section \ref{background} we present DL, RL and the alternating proximal gradient descent algorithm. In Section \ref{codesec} we give an overview on the library design and the implemented regularisers. In section \ref{related work} we comment the other available libraries on the topic. We finish with the conclusion and further work we intend to perform.
+
+
+
+\section{Theoretical background} \label{background}
+
+In the following section a basic theoretical background on DL and RL problems is provided, together with the alternating proximal minimisation algorithm. The expert reader can feel free to skip it, if she/he is familiar with these mathematical concepts.
+% we introduce definition and functions
+%Let us first define the notation we use. Bold upper case letters as $\textbf{X}$ denote matrices, whose $i$-th row is indicated as $\textbf{X}_{i,:}$ and $j$-th column as $\textbf{X}_{:,j}$. The generic element of the matrix $\textbf{X}$ is denoted by $x_{ij}$. Single vectors are written as bold lower case letters $\textbf{v}$.
+
+
+\subsection{Dictionary Learning}
+Dictionary learning (DL) is a machine learning method that aims at finding a representation of the original data as a linear combination of basic patterns (atoms) and coefficients. The representation is completely data driven, in contrast to more generic and less adaptive methods such as Wavelet and Fourier transform \cite{mallat2008wavelet, vetterli2013fourier}.
+
+Given a dataset $\textbf{X} \in \mathbb{R}^{n\times d}$ where $n$ is the number of samples and $d$ is the feature space dimension, the goal of DL is to decompose a dataset into two matrices:
+\begin{itemize}
+\item a dictionary $\textbf{D} \in \mathbb{R}^{k\times d}$, a matrix of atoms that represent basic signals;
+\item the coefficients $\textbf{C} \in \mathbb{R}^{n\times k}$, a matrix of weights for the atoms of the dictionary.
+\end{itemize}
+$k$ represents the number of atoms composing the dictionary.%, whose choice is a critical point of this problem and will be discussed later on.
+
+Hence, the original matrix $\textbf{X}$ can be retrieved as a linear combination of dictionary and coefficients as in Equation (\ref{linear combination}).
+\begin{equation}\label{linear combination}
+\textbf{X} \approx \textbf{C}\textbf{D}
+\end{equation}
+The recovering of the matrices $\textbf{C}$ and $\textbf{D}$ is solved by minimising a loss term $\ell$: a a positive differentiable function that quantifies how well the multiplication of the two matrices approximates the signal.
+\begin{equation}\label{loss function}
+\underset{\textbf{C}, \textbf{D}}{\text{argmin}}\bigg[\ell(\textbf{X}, \textbf{C} \textbf{D}) \bigg]
+\end{equation}
+
+The minimisation problem in Equation (\ref{loss function}) not always gives us the best possible solution. In presence of noisy data, ill-posed problems or when we have prior knowledge on the problem one of the usual tricks is to add terms or constraints to the functional in order to obtain a regularised problem (Equation (\ref{generic functional})).
+%
+%The formalisation of this regularised problem is given in Equation (\ref{generic functional}).
+\begin{equation}\label{generic functional}
+\underset{\textbf{C}, \textbf{D}}{\text{argmin}} \bigg[ \ell(\textbf{X}, \textbf{CD}) + \Phi(\textbf{C}) + \Psi(\textbf{D}) \bigg]
+\end{equation}
+%\bigg[\sum_{i=1}^N  (\ell(\textbf{X}_{i,:}, \textbf{C}_{i,:}, \textbf{D}) + \Phi(\textbf{C}_{i,:})) + \sum_{j=1}^k \Psi(\textbf{D}_{j,:})\bigg]
+$\Phi(\textbf{C})$  and $\Psi(\textbf{D})$ are two penalty functions that act respectively on the coefficients and on the dictionary.
+The functional in Equation (\ref{generic functional}) can be further specialised in order to include constraints sets that reduce the space in which a solution is admissible. A very common example is when we impose the involved matrices to be non-negative, a problem known as Non-negative Matrix Factorization (NMF) \cite{lee1999learning}.
+%
+%
+\subsection{Alternating proximal gradient descent}
+It is worth noting that the optimisation of Equation (\ref{generic functional}) poses some issues. In fact, due to the multiplication present in the loss function $\ell$, Equation (\ref{generic functional}) is jointly non-convex. Moreover the generality of the penalty terms requires the use of a minimisation algorithm that deals with different choices of penalties without a substantial change in its flow.
+
+All taken into account, our optimisation choice is \emph{alternating proximal gradient descent} \cite{bolte2014proximal} which assures the convergence to a local minima under the following assumptions: 1) the loss function $\ell(\textbf{X}, \textbf{C}\textbf{D})$  is differentiable and partially Lipschitz continuous; 2) it is possible to compute the proximal mapping of the penalty terms in closed form or at least to approximate it. See \cite{bolte2014proximal} for mathematical details and theoretical proofs.
+
+The proximal mapping \cite{parikh2014proximal} of a function $g$ for a point $\textbf{u}$ is defined as Equation (\ref{proximal mapping}).
+\begin{equation}\label{proximal mapping}
+\text{prox}_{\mu g}(\textbf{u}) = \underset{\textbf{v}}{\text{argmin}}\left(g(\textbf{v}) + \frac{1}{2\mu}\parallel\textbf{v} - \textbf{u}\parallel_2^2\right)
+\end{equation}
+%which, roughly speaking, means that you are looking for a point that minimises $g$ and it is close to $\textbf{u}$.
+When the computation of the prox is not available in a closed form, it can be approximated via a iterative algorithm.
+
+A general overview on the optimization algorithm is given in Algorithm  \ref{altprox}. The algorithm alternates the steps 3, 4, 5 and 6 until convergence. In step 4 the computation of the gradient descent is performed on the dictionary keeping the coefficients fixed. On the result the proximal mapping of the dictionary learning penalty $\Psi$ is applied. The same is done in step 6 on the coefficients.
+
+We want to remark that the gradient is computed w.r.t. the previous iteration in both cases \cite{rakotomamonjy2013direct}. This allows to perform the two steps in parallel if needed.
+
+\begin{algorithm}[H]
+\caption{Alternating proximal gradient descent}\label{altprox}
+\begin{algorithmic}[1]
+\State $\text{Random initialization of the matrices}\ C\ \text{and}\ D$
+%\State $\text{Let} \ \mathcal{F} \text{ be the name of } {\parallel}X - CD{\parallel}_F^2$
+\For {$i=0:\text{max{\_}iters}$}
+\State $\gamma_D \gets \text{lipschitz\_step}_\ell(D)$
+\State $\gamma_C \gets \text{lipschitz\_step}_\ell(C)$
+\State $D_{t+1} = \text{prox}_{\gamma_D \Psi}(D_t - \gamma_D \bigtriangledown_D(\ell_t))$
+\State $C_{t+1} = \text{prox}_{\gamma_C \Phi}(C_t - \gamma_C \bigtriangledown_C(\ell_t))$
+\If{$\text{difference between iterates}< \epsilon\ \textbf{and}$\\
+ \qquad $\ \ \text{different between previous and current objective function}<  \epsilon$}
+\State $\textbf{break}$
+\EndIf
+\EndFor
+\end{algorithmic}
+
+\end{algorithm}
+%
+%
+\subsection{Representation learning (sparse coding)}
+Representation learning is a more general form of sparse coding (SC) that similarly to DL aims at finding the best approximation of a signal $\textbf{X}$ (Equation (\ref{linear combination})), when the dictionary $\textbf{D}$ is given. This leads to a problem which is easier to minimise and, given convex loss function and penalty, becomes convex.
+The convexity property guarantees that a global optimum can be always reached.
+
+In representation learning the choice of the penalty on the coefficients is arbitrary and dictated by the problem while in SC we assume the use of $L^0$ or $L^1$ norms. The formalisation is given in Equation (\ref{sparse coding}).
+\begin{equation}\label{sparse coding}
+\underset{\textbf{C}}{\text{argmin}} \bigg[ \ell(\textbf{X}, \textbf{CD}) + \Phi(\textbf{C}) \bigg]
+\end{equation}
+This optimisation problem, since involves the minimisation on only one variable, can be solved with proximal gradient descent that acts similarly to what explained in Algorithm \ref{altprox} without steps 3 and 5.
+%
+%
+
+
+%The tuning of the parameter can be further improved by shrinking the interval toward those parameters that give a better cross-validation result.
+
+
+
+\input{library}
+\input{conclusion}
+%\begin{lstlisting}[caption={Useless code},label=list:8-6,captionpos=t,float,abovecaptionskip=-\medskipamount]
+%for i:=maxint to 0 do
+%begin
+%    j:=square(root(i));
+%end;
+%\end{lstlisting}
+
+
+%
+%\subparagraph*{Acknowledgements}
+%
+%Dobbiamo ringraziare qualcuno? Saverio per il supporto teorico?
+%%
+%% Bibliography
+%%
+
+%% Either use bibtex (recommended), but commented out in this sample
+\bibliography{bib}
+
+\newpage
+\input{appendice_codice}
+
+
+\end{document}

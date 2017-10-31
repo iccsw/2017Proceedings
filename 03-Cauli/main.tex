@@ -1,0 +1,845 @@
+\documentclass[a4paper,UKenglish]{oasics-v2016}
+\usepackage{microtype, amsmath, stmaryrd, verbatim}
+\bibliographystyle{plainurl}
+
+\title{Equivalence of Probabilistic $\mu$-Calculus and p-Automata\footnote{A 
+longer version of this paper appeared in the proceedings of CIAA 2017 
+\cite{ciaa17}}}
+\author[]{Claudia Cauli}	
+\author[]{Nir Piterman}
+\affil[]{University of Leicester, Department of Informatics, Leicester, UK\\
+\texttt{cc488@le.ac.uk, nir.piterman@gmail.com}}
+
+\authorrunning{C. Cauli and N. Piterman}
+\Copyright{Claudia Cauli and Nir Piterman}
+
+\subjclass{F.1.2. Models of Computation - Probabilistic Computation, F.4.1. 
+Mathematical Logic, F.4.2. Formal Languages}
+\keywords{$\mu$-Calculus, Automata, Probabilistic Models}
+
+%Editor-only macros:: begin (do not touch as 
+%author)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\EventEditors{John Q. Open and Joan R. Acces}
+%\EventNoEds{2}
+%\EventLongTitle{42nd Conference on Very Important Topics (CVIT 2016)}
+%\EventShortTitle{CVIT 2016}
+%\EventAcronym{CVIT}
+%\EventYear{2016}
+%\EventDate{December 24--27, 2016}
+%\EventLocation{Little Whinging, United Kingdom}
+%\EventLogo{}
+%\SeriesVolume{42}
+%\ArticleNo{23}
+% Editor-only macros::end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+	
+	\maketitle
+	
+	\begin{abstract}
+An important characteristic of Kozen's $\mu$-calculus is its
+strong connection with parity alternating tree automata.
+Here, 
+we show that the probabilistic $\mu$-calculus, $\mu^p$-calculus, and
+p-automata (parity alternating Markov chain automata) have an
+equally strong connection.
+Namely, for every $\mu^p$-calculus formula we can construct a
+p-automaton that accepts exactly those Markov chains that satisfy
+the formula.
+For every p-automaton we can construct a $\mu^p$-calculus formula
+satisfied in exactly those Markov chains that are accepted by the
+automaton.
+The translation in one direction relies on a normal form of the
+calculus and in the other direction on the usage of vectorial
+$\mu^p$-calculus.
+	\end{abstract}
+
+\section{Introduction}
+The verification of probabilistic systems is an increasingly important area
+that has led to the development of new formalisms and tools for the evaluation
+of quantitative properties over stochastic models.
+These tools range from temporal logics and quantitative variants of Kozen's
+modal $\mu$-calculus \cite{Koz83} to probabilistic automata and games
+\cite{BK08,HK97,Mio2012a,Mio12,MS15}.
+
+This work focuses on two such formalisms, $\mu^p$-calculus and p-automata.
+The $\mu^p$-calculus has been introduced in \cite{CKP15} as a
+probabilistic extension of Kozen's modal $\mu$-calculus.
+The so-called p-automata \cite{CP13} are probabilistic alternating
+parity automata that read Markov chains as input. 
+Acceptance of a Markov chain by a p-automaton is decided by an
+obligation game, that is, a turn-based stochastic parity game with
+obligations. 
+
+The key contribution given by this paper is the proof of the
+equivalence between $\mu^p$-calculus and p-automata. 
+We provide a framework to translate $\mu^p$-formulas into p-automata
+and, using the vectorial syntax, define the inverse conversion from
+p-automata into $\mu^p$-calculus. Thus, we show that the two formalisms
+have the same expressive power and that they enjoy a 
+close
+relationship similar to those of Kozen's $\mu$-calculus and
+alternating tree automata (see below).
+%
+\subparagraph{Related Work.}This study belongs to a general field of research 
+that 
+aims to define a connection between logics and automata theory.
+An interesting survey conducted by Kupferman et al. in \cite{KVW00} provides 
+insights into this relationship by presenting translations from a number of 
+temporal logics -- linear-time, branching-time, $\mu$-calculus, and its 
+alternation-free fragment -- into different classes of alternating tree 
+automata.
+
+Over the last three decades, several studies have focused on the definition of 
+an automata-theoretic approach to Kozen's $\mu$-calculus.
+In \cite{EJ91}, Emerson and Jutla proposed a framework to convert 
+$\mu$-calculus formulas into alternating tree automata, then reduced to their 
+non-deterministic counterpart.
+Their result complements previous studies by Niwi\'{n}ski \cite{Ni88} that 
+defined the inverse translation from non-deterministic tree automata to 
+$\mu$-calculus, thus showing that Kozen's $\mu$-calculus is equivalent to 
+tree automata in expressive power.
+In \cite{JW95}, Janin and Walukiewicz introduced $\mu$-automata, alternating 
+automata with a parity acceptance condition that easily translate to and from 
+$\mu$-calculus formulas in disjunctive normal form.
+In a subsequent work, \cite{Ni97}, Niwi\'{n}ski extends his previous result to 
+a broader scope establishing the equivalence between alternating automata over 
+arbitrary algebraic structures -- thus including trees -- and fixed point 
+terms, a general fixpoint formalism that finds a natural interpretation as a 
+system of equations.
+Wilke, in \cite{Wil01}, addresses the interplay among $\mu$-calculus, 
+alternating tree automata, and games.
+In particular, he gives a translation from logic to automata and then defines 
+the acceptance problem for automata by reduction to the winner problem in 
+parity games.
+A comprehensive outline of the relationship among logics, automata, and parity 
+games
+is given in \cite{GTW02}. Overviews of $\mu$-calculus, including its 
+mathematical foundation, axiomatic system, properties, guarded form, vectorial 
+syntax, game semantics, and equivalence with automata, can be found in 
+\cite{AN01,BBW07,BS07,BW15}.
+
+Huth and Kwiatkowska suggested a quantitative $\mu$-calculus to reason
+about Markov chains \cite{HK97}.
+This calculus was extended in \cite{CIN05} by adding a bounded number
+of probabilistic quantifications and allowing to define PCTL*.
+The $\mu^p$-calculus allows to nest probabilistic quantifications
+inside fixpoint operators and, thus, allows for unbounded
+probabilistic quantifications.
+It is a subset of the calculus defined in \cite{Mio2012a,MS15}.
+The $\mu^p$-calculus is 
+expressive enough to include PCTL 
+and PCTL*, the complexity of its decision procedures is reduced, and
+the algorithms involved wrap up standard algorithms for solution of
+(quantitative) two-player stochastic parity games in extra layer
+rather than bespoke algorithms. 
+
+%
+%
+%
+\section{Background}
+%
+%
+%
+\subsection{Markov Chains}
+A Markov chain $M$ over a set $AP$ of atomic propositions is a
+probabilistic labelled transition system defined by the tuple $M=(S,
+s^{in}, L, P)$, where $S$ is the set of locations; $s^{in} \in S$ is
+the initial location; $L$ is a labelling function, overloaded to both
+denote $L: S \rightarrow 2^{AP}$ and $L: AP \rightarrow 2^S$; and $P$
+is the probability transition function $P: S \times S \rightarrow
+[0,1]$. 
+For every location $s$ we define the set $succ(s)$ of its successors as the set 
+of locations $s^\prime$ such that $P(s,s^\prime)>0$.
+Clearly, the sum of the probabilities of moving from a location to all its 
+successors must be equal to $1$, that is $\textstyle\sum_{s^\prime \in succ(s)} 
+P(s,s^\prime) = 1$, and every location has at least one successor.
+%
+%
+\subsection{Obligation Games}
+Obligation games \cite{CP13} are two-player stochastic parity games with 
+obligations that are played on a graph amongst a probabilistic system and two 
+players, called Player 0 and Player 1.
+\begin{definition}[Obligation Game]
+	An obligation game $G$ is the tuple $$G = \big((V, E),(V_0, V_1, 
+	V_p),\mathcal{K}, \left\langle \alpha, O \right\rangle \big),$$ where $V$ 
+	is 
+	the set of configurations, partitioned in Player 0 ($V_0$), Player 1 
+	($V_1$), 
+	and probabilistic configurations ($V_p$); $E \subseteq V \times V$ is the 
+	set 
+	of edges; $\mathcal{K}: V_p\times V \rightarrow [0,1]$ is the probability 
+	function such that $(v,v^\prime)\notin E$ implies
+	$\mathcal{K}(v,v^\prime)=0$ and for every $v\in V_p$ we have
+	$\textstyle\sum_{v^\prime\in V}\mathcal{K}(v,v^\prime)=1$;
+	and the pair $\left\langle \alpha, O \right\rangle$ defines the 
+	\emph{goal}: 
+	$\alpha : V \rightarrow [0..k]$ is the parity condition, and $O : V 
+	\rightarrow 
+	(\lbrace >, \geq \rbrace \times [0,1]) \cup \lbrace \bot\rbrace $ marks the 
+	obligations, with the symbol $\bot$ denoting no obligation.
+\end{definition}
+Obligations are statements applied to some configurations that impose 
+constraints on the winning paths that depart from them.
+An obligation has the form $>\!x$ or $\geq\!x$, where $x \in [0,1]$, so as to 
+indicate that the measure of the paths starting from that configuration must be 
+greater than, or greater than or equal to, a given value $x$.
+Fixing a pair of strategies -- $\sigma$ for Player 0 and $\pi$ for Player 1 -- 
+and a prefix of configurations $w\in V^+$, the game is reduced to only 
+probabilistic vertices and, hence, can be seen as a Markov chain enriched with 
+a \emph{goal} $\langle \alpha,O\rangle$, that is, a winning condition and a set 
+of obligations.
+We denote such structure as $G^{w(\sigma,\pi)}$.
+Value and winner of $G$ are decided by analysing $G^{w(\sigma,\pi)}$ using the 
+notion of \emph{choice set}.
+
+A choice set is the set of finite paths that extend the prefix $w$ and end in 
+a configuration with an obligation that can be met.
+It must be extended through infinite paths that either reach another obligation 
+or never reach another obligation and are winning.
+The measure of the choice set is the measure of these infinite paths and 
+determines the value of the game on every configuration for each player, 
+denoted as $val_i(v)$ for $i\in\lbrace 0,1\rbrace$.
+We refer the reader to \cite{CP13} for further details concerning the measure 
+of choice sets and the value of obligation parity Markov chains.
+We write the value of game $G$ on configuration $v$ as $val_G(v)$ and we define 
+it as the value for Player 0 on $v$. 
+
+Player 0 wins the game $G$ from prefix $w$ with a value of $1$ if for
+every value $r<1$ there exists a strategy $\sigma$ such
+that for all Player 1's strategies $\pi$ in the corresponding Markov
+chain $G^{w(\sigma, \pi)}$ it is possible to determine a choice set
+whose measure is at least $r$.  
+%
+%
+\subsection{The $\mu^p$-Calculus}
+The $\mu^{p}$-calculus \cite{CKP15} is an extension of Kozen's 
+$\mu$-calculus \cite{Koz83} that allows one to specify properties that are 
+bounded by a specific probability.
+This is done through the distinction between qualitative ($\Phi$) and 
+quantitative ($\Psi$) formulas that are evaluated to values in the sets 
+$\lbrace 0,1 \rbrace$ and $[0,1]$, respectively.
+A $\mu^p$-calculus sentence is qualitative and might contain one or more 
+quantitative sub-formulas within a probabilistic quantification operator 
+$[\cdot]_J$.
+The operator $[\cdot]_J$ checks whether the value of the enclosed formula 
+satisfies the bound $J$ and gets the value $1$ or $0$ accordingly.
+The syntax of the $\mu^p$-calculus is given by the following BNF 
+grammar.\vspace*{5pt}\\
+%%%%% SYNTAX %%%
+\hspace*{15pt}$J ::=\ \lbrace \geq, > \rbrace \times [0,1]$
+
+$\Phi ::=\ p \mid \neg p \mid \varphi_1 \wedge \varphi_2 \mid \varphi_1 \vee 
+\varphi_2 \mid [\Psi]_J \mid \mu X_i.\varphi \mid \nu X_i.\varphi $
+
+$\Psi ::=\ \Phi \mid X_i \mid \psi_1 \wedge \psi_2 \mid \psi_1 \vee \psi_2 \mid 
+\bigcirc \psi \mid \mu X_i.\psi \mid \nu X_i.\psi$\vspace*{5pt}\\
+Fixed point formulas are of the form $\sigma X_i.\varphi$, where $\sigma \in 
+\lbrace \mu,\nu \rbrace$ and $X_i$ is a variable in the set 
+$\mathcal{V}=\lbrace X_0, X_1, ... \rbrace$.
+Variable $X_i$ is bound by the fixed point operator to the formula $\varphi$, 
+which we also denote by $\varphi(X_i)$ or $\varphi_{X_i}$.
+%%%%% SEMANTICS %%%%%
+\subparagraph{Semantics.}The semantics of a $\mu^p$-calculus formula $\varphi$ 
+is 
+given with respect to a Markov chain $M$ and an interpretation $\rho: 
+\mathcal{V} \rightarrow (S \rightarrow [0,1])$.
+That is, $\rho$ associates a function from locations to values in the domain 
+$[0,1]$ with each variable $X_i$ appearing in $\varphi$.
+Therefore, the semantics is a mapping of type $S \rightarrow [0,1]$ denoted by 
+$\llbracket \varphi \rrbracket^\rho_M$ and defined as follows:
+$$
+\begin{array}{r c l r c l}
+\llbracket p \rrbracket^{\rho}_{M}  & = & \chi_{L(p)} &
+\llbracket \neg p \rrbracket^{\rho}_{M}  & = &  1- \chi_{L(p)} \\[3pt]
+\llbracket \varphi_{1} \wedge \varphi_{2} \rrbracket^{\rho}_{M} & = & \min 
+\lbrace 
+\llbracket \varphi_{1} \rrbracket^{\rho}_{M},\llbracket \varphi_{2} 
+\rrbracket^{\rho}_{M} \rbrace & 
+\llbracket \varphi_{1} \vee \varphi_{2} \rrbracket^{\rho}_{M} & = & \max 
+\lbrace 
+\llbracket \varphi_{1} \rrbracket^{\rho}_{M},\llbracket \varphi_{2} 
+\rrbracket^{\rho}_{M} \rbrace \\[3pt]
+\llbracket X \rrbracket^{\rho}_{M} & = & \rho(X) &
+\multirow{2}{*}{\mbox{$\llbracket [\varphi]_{J} \rrbracket^{\rho}_{M} $}} &
+\multirow{2}{*}{ = } &
+\multirow{2}{*}{
+	\mbox{$
+		\left \{
+		\begin{array}{l l}
+		1 & \mbox{If } \llbracket \varphi \rrbracket^{\rho}_{M} (s)J \\[3pt]
+		0 & \mbox{Otherwise}
+		\end{array} \right .
+		$}
+}
+\\[3pt]
+\llbracket \bigcirc \varphi \rrbracket^{\rho}_{M} & = & \lambda s. 
+\textstyle\sum_{s^{\prime}} P(s,s^{\prime}) \llbracket \varphi 
+\rrbracket^{\rho}_{M}(s^{\prime})  \\[3pt]
+\llbracket \mu X.\varphi \rrbracket^{\rho}_{M} & = & \text{lfp}(\lambda 
+f.\llbracket \varphi 
+\rrbracket^{\rho[f/X]}_{M}) & 
+\llbracket \nu X.\varphi \rrbracket^{\rho}_{M} & = & \text{gfp}(\lambda 
+f.\llbracket \varphi 
+\rrbracket^{\rho[f/X]}_{M})
+\end{array}
+$$    
+Where $\chi_{L(p)}$ is the function that associates to a location $s$ the value 
+$0$ if $s\notin L(p)$, or the value $1$ if $s\in L(p)$.
+The only elements of the calculus that are evaluated exclusively to values in 
+the set $\lbrace 0,1 \rbrace$ are $p$, $\neg p$, and $[\cdot]_{J}$.
+All the other operators get real values in $[0,1]$, thus, can specify both 
+quantitative and qualitative properties depending on their nested sub-formulas.
+
+The alternation depth of a formula 
+$\varphi$, denoted by $ad(\varphi)$, is the maximum number of fixed point 
+operators that occur nested and alternated \cite{EL86,CKP15}.
+In addition to the alternation depth, with every $\mu^p$-calculus sub-formula 
+$\psi$ of $\varphi$ is associated a colour $c(\psi)$. If $\psi$ is a greatest 
+fixed point then $c(\psi)=2\big(ad(\varphi)-ad(\psi)\big)$; if $\psi$ is a 
+least fixed point then $c(\psi)=2\big(ad(\varphi)-ad(\psi)\big)+1$; and in 
+every other case $c(\psi)=2ad(\varphi)-1$.
+%
+%
+%
+\subparagraph{Game Semantics \cite{CKP15}.} Given a $\mu^p$-calculus formula 
+$\varphi$ 
+and 
+a Markov chain $M$, we construct an obligation game $G_{M,\varphi}$ and we 
+refer to such game as \emph{semantics game}. The value on 
+configuration $(s, \varphi)$ equals the semantics of the $\mu^p$-formula 
+$\varphi$ over the location $s$ of the Markov chain. We say that $M$ 
+\textit{satisfies} $\varphi$, denoted $M \models \varphi$ iff $\llbracket 
+\varphi \rrbracket ^\rho_M (s^{in})=1$, which in terms of game semantics 
+corresponds to $M \models \varphi$ iff $val_{G_{M,\varphi}}(s^{in},\varphi)=1$.
+%
+%
+%
+\begin{comment}
+\subsubsection*{Game Semantics.}Given a $\mu^p$-calculus formula $\varphi$ and 
+a Markov chain $M$, we construct an obligation game $G_{M,\varphi}$ and we 
+refer to such game as \emph{semantics game}. Game $G_{M,\varphi}$ is the tuple 
+$\big( (V,E),(V_0,V_1,V_p),\mathcal{K},\langle\alpha,O \big\rangle)$, where:
+\begin{itemize}
+	\item $V = S\times sub(\varphi)$
+	\item $V_0 = \lbrace (s, \varphi_1 \vee \varphi_2) \mid 
+	\varphi_1\vee\varphi_2 
+	\in sub(\varphi) \rbrace$
+	\item $V_1 = \lbrace (s, \varphi_1 \wedge \varphi_2) \mid 
+	\varphi_1\wedge\varphi_2 \in sub(\varphi) \rbrace$
+	\item $V_p = V \setminus (V_0 \cup V_1)$
+	\item $E = \lbrace \big((s,p),(s,p)\big),\big((s,\neg p),(s,\neg p)\big) 
+	\rbrace
+	\cup \lbrace \big((s,X),(s,\sigma X. \varphi(X))\big) \rbrace\ \cup$\\
+	\hspace*{21pt}$\lbrace \big((s,\varphi_1 \vee \varphi_2),(s,\varphi_i)\big) 
+	\mid i \in \lbrace 1,2 \rbrace \rbrace \cup\ \lbrace \big((s,\varphi_1 
+	\wedge 
+	\varphi_2),(s,\varphi_i)\big) \mid i \in \lbrace 1,2 \rbrace \rbrace\ 
+	\cup$\\
+	\hspace*{21pt}$\lbrace \big((s,\bigcirc \varphi),(s^\prime,\varphi)\big) 
+	\mid 
+	s^\prime \in succ(s) \rbrace\ \cup \lbrace 
+	\big((s,[\varphi]_J),(s,\varphi)\big) \rbrace\ \cup$\\
+	\hspace*{21pt}$\lbrace \big((s,\sigma X. \varphi(X)),(s,\varphi(X))\big) 
+	\mid 
+	\sigma \in \lbrace \mu,\nu \rbrace \rbrace$
+	\item $\mathcal{K}((s,\bigcirc \psi),(s^\prime, \psi))=P(s,s^\prime)$
+	\item $\alpha(s,\psi) = \begin{cases}0&\mbox{ if }\psi=p, p\in L(s)\mbox{ 
+	or 
+	}\psi=\neg p, p\notin L(s)\\
+	1&\mbox{ if }\psi=p, p\notin L(s)\mbox{ or }\psi=\neg p, p\in L(s)\\
+	c(\psi) &\mbox{ otherwise}\end{cases}$
+	\item $O(s,[\psi]_J) = J,\ \ O(v)=\bot \mbox{ for all other }v\in V$
+\end{itemize}
+\begin{lemma}{\emph{\cite{CKP15}}}
+	For every Markov chain $M$, every location $s$, and every formula $\varphi$ 
+	we 
+	have $\llbracket\varphi\rrbracket^\rho_M (s)= val_0(s,\varphi)$, where 
+	$val_0(s,\varphi)$ is the value of configuration $(s,\varphi)$ in game 
+	$G_{M,\varphi}$.
+\end{lemma}
+For a qualitative $\mu^p$-calculus formula $\varphi$ we say that $M$ satisfies 
+$\varphi$, denoted $M, s^{in} \models\varphi$ or $M\models\varphi$, iff 
+$\llbracket \varphi\rrbracket^\rho_M(s^{in}) = 1$. That is, $M\models\varphi 
+\mbox{ iff }val_{G_{M,\varphi}}(s^{in}, \varphi)=1$.
+\end{comment}
+%
+%
+\subsection{p-Automata}
+A p-automaton $A$ is an alternating parity automaton that reads Markov chains 
+as input \cite{CP13}.
+From a state $q$, the p-automaton reads a location $s$ of a Markov chain $M$ 
+and, according to the labelling $L(s)$, performs a transition.
+Since Markov chains have probabilities and the paths starting from a location 
+$s$ are characterised by a measure, the p-automaton $A$ might need to mark the 
+states by a bound $J$.
+The bound $J$ is an element of the set $(\lbrace \geq,> \rbrace \times [0,1])$ 
+and, analogously to the obligations over configurations of games, imposes a 
+constraint over the measure of the accepted paths starting in $s$.
+
+For the set of states $Q$, we denote by $\llbracket Q \rrbracket_{>}$ the set 
+of states $q \in Q$ that are marked by a bound $J$ defined as $\lbrace 
+\llbracket q \rrbracket_{J} \mid q\!\in\!Q,\ J\!\in\!(\lbrace \geq,>\rbrace 
+\times [0,1]) \rbrace$. Moreover, we denote by $B^{+}(X)$ the set of 
+\emph{positive boolean formulas} over elements $x$ in the set $X$, given by the 
+following grammar:
+$$ \theta ::= x \mid true \mid false \mid \theta_{1}\wedge\theta_{2} \mid 
+\theta_{1}\vee\theta_{2}$$ 
+Given a formula $\theta \in B^{+}(X)$ its \emph{closure} $\textsf{cl}(\theta)$ 
+is the set of all sub-formulas of $\theta$ defined according to the grammar 
+above.
+For a set $\Theta$ of formulas, the closure is computed as 
+$\textsf{cl}(\Theta)=\bigcup_{\theta \in \Theta}\textsf{cl}(\theta)$.
+\begin{definition}[p-Automata]
+	A p-automaton $A$ over the set $AP$ of atomic propositions is defined by 
+	the 
+	tuple: 
+	$$A = (\Sigma, Q, \varphi^{in}, \delta, \Omega)$$
+	where $\Sigma=2^{AP}$ is a finite input alphabet, $Q$ is a possibly 
+	infinite 
+	set of states, $\varphi^{in}\in B^+(\llbracket Q\rrbracket_>)$ is the 
+	initial 
+	condition, $\delta:Q\times\Sigma\rightarrow B^+(Q \cup \llbracket 
+	Q\rrbracket_>)$ is the transition function, and 
+	$\Omega:Q\rightarrow[0\hdots 
+	k]$ is the parity acceptance condition.
+\end{definition}
+%
+%
+\subparagraph{Acceptance Game \cite{CP13}.}The set of Markov chains accepted by 
+a 
+p-automaton $A$ is the language of $A$, denoted by $\mathcal{L}(A)$.
+Acceptance of a Markov chain $M$ by $A$ is decided through the obligation game 
+$G_{M,A}$. The Markov chain $M$ is accepted if the configuration 
+$(s^{in},\varphi^{in})$ 
+has value 1 in $G_{M,A}$. That is, $M\in\mathcal{L}(A)\mbox{ iff 
+}val_{G_{M,A}}(s^{in}, \varphi^{in})=1$.
+%
+\begin{comment}
+\subsubsection*{Acceptance Game} The set of Markov chains accepted by a 
+p-automaton $A$ is the language of $A$, denoted by $\mathcal{L}(A)$.
+Acceptance of a Markov chain $M$ by $A$ is decided through the obligation game 
+$G_{M,A} = (V,E,(V_0,V_1,V_p),\mathcal{K}, \mathcal{G})$, where:
+\begin{itemize}
+	\item $V = S \times \textsf{cl} (\delta(Q,\Sigma))$
+	\item $V_{0} = \lbrace (s, \theta_{1} \vee \theta_{2}) \mid s\in S \text{ 
+	and 
+	}\theta_{1} \vee \theta_{2} \in \textsf{cl} (\delta(Q,\Sigma))\rbrace$
+	\item $V_{1} = \lbrace (s, \theta_{1} \wedge \theta_{2}) \mid s\in S \text{ 
+	and 
+	}\theta_{1} \wedge \theta_{2} \in \textsf{cl} (\delta(Q,\Sigma))\rbrace$
+	\item $V_{p} = V \setminus (V_{0} \cup V_{1})$
+	\item $E = \lbrace \big((s,\theta_1 \wedge \theta_2),(s,\theta_i)\big) \mid 
+	i 
+	\in \lbrace 1,2 \rbrace \rbrace \ \cup$\\
+	\hspace*{21pt}$\lbrace \big((s,\theta_1 \vee \theta_2),(s,\theta_i)\big) 
+	\mid i 
+	\in \lbrace 1,2 \rbrace \rbrace \ \cup $\\
+	\hspace*{21pt}$\lbrace \big((s,q),(s^{\prime},\delta(q,L(s)))\big) \mid 
+	s^{\prime}\in succ(s)\rbrace \ \cup\ $\\
+	\hspace*{21pt}$\lbrace \big((s,\llbracket q 
+	\rrbracket_{J}),(s^{\prime},\delta(q,L(s)))\big) \mid s^{\prime}\in succ(s) 
+	\rbrace$
+	\item $\mathcal{K}\big((s,q),(s^{\prime},\delta(q,L(s)))\big)\ =\ 
+	\mathcal{K}\big((s,\llbracket q 
+	\rrbracket_{J}),(s^{\prime},\delta(q,L(s)))\big)\ =\ P(s,s^{\prime})$
+	\item $\mathcal{G} = \langle \alpha, O \rangle$, where $\alpha(s,q) = 
+	\alpha(s,\llbracket q \rrbracket_J) = \Omega(q)$, and $O(s,\llbracket q 
+	\rrbracket_J)= J$.
+\end{itemize}
+The Markov chain $M$ is accepted if the configuration $(s^{in},\varphi^{in})$ 
+has value 1 in $G_{M,A}$. That is, $M\in\mathcal{L}(A)\mbox{ iff 
+}val_{G_{M,A}}(s^{in}, \varphi^{in})=1$.
+\end{comment}
+\section{Vectorial $\mu^p$-Calculus}
+We introduce the vectorial form as an alternative syntax for formulas in 
+$\mu^p$-calculus.
+This form exposes the distinction between the fixpoint operators, which appear 
+as a prefix of the formula, and the modal formulas that they bind, allowing one 
+to focus on the modal properties rather than on an intricate nesting of 
+fixed-point terms.
+Through this syntax, the alternation depth of a sentence is easier to identify, 
+as the number of pairwise distinct fixpoint operators within the prefix of the 
+formula, and the most complex properties can be expressed in a succinct way.
+
+Let $F_i$ be the set of functions $(S \rightarrow [0,1])_i$ from locations to 
+values in the unit interval, and $\varphi_i$ be a modal $\mu^p$-formula over 
+the product lattice $(F_1 \times\hdots\times F_n)^m$ with range $F_i$, i.e. 
+$\varphi_i$ takes $m$ vectors of $n$ variables $\langle 
+X_1^1,\hdots,X_n^1,\hdots,X_1^m,$ $\hdots,X_n^m \rangle$ and evaluates to a 
+single function in $F_i$.
+If we consider the vector $\vec\varphi$ of all modal terms 
+$\langle\varphi_1,\hdots,\varphi_n\rangle$, each of which has range $F_i$, 
+then, $\vec\varphi$ can be seen as a mapping of type 
+$\vec\varphi:(F_1\times\hdots\times F_n)^m\rightarrow F_1\times\hdots\times 
+F_n$, whose monotonicity derives from the monotonicity of each single component 
+and for which, by the Knaster-Tarski theorem, least and greatest fixpoints are 
+always defined.
+For $m=1$, we denote as $\mu\vec{X}.\vec\varphi$, resp. 
+$\nu\vec{X}.\vec\varphi$, the least, resp. greatest, fixpoint of the mapping 
+$\vec\varphi$, as a compact notation for:
+\vspace*{5pt}\\
+\hspace*{100pt}	$
+\sigma
+\begin{pmatrix}
+X_1\\
+\vdots\\
+X_n
+\end{pmatrix}
+.
+\begin{pmatrix}
+\ \varphi_1(X_1,\hdots,X_n)\ \\
+\ \vdots\ \\
+\ \varphi_n(X_1,\hdots,X_n)\ 
+\ \end{pmatrix}
+=
+\begin{pmatrix}
+f_1\\
+\vdots\\
+f_n
+\end{pmatrix}.
+$
+\vspace*{5pt}\\
+Vectorial $\mu^p$-calculus has the same expressive power as scalar 
+$\mu^p$-calculus.
+By the application of the Beki\v{c} principle \cite{AN01}, whose effect is to 
+push the fixpoint operators inwards, every vectorial formula $\sigma \vec{X}. 
+\vec{\varphi}$ can be reduced to a vector $\vec{f}$ of scalar formulas $\langle 
+f_1,\hdots,f_n\rangle$. 
+\subparagraph*{Semantics.}The semantics of a vectorial formula 
+$\sigma\vec{X}.\vec\varphi$ is the vector of 
+semantics: 
+$\llbracket\sigma\vec{X}.\vec\varphi\rrbracket^\rho_M=\llbracket\sigma 
+X_1.\vec\varphi\rrbracket^\rho_M\times\hdots\times\llbracket\sigma 
+X_n.\vec\varphi\rrbracket^\rho_M.$
+We use the projection operator on vectors $\downarrow_i$ to select the $i$-th 
+component: $\llbracket\sigma\vec{X}.\vec\varphi\downarrow_i\rrbracket^\rho_M = 
+\llbracket \sigma X_i.\vec\varphi\rrbracket^\rho_M = f_i$. 
+The meaning of choosing a component is to define an \emph{entry point} to the 
+computation performed by the vectorial formula \cite{BFL15}.
+\subparagraph{Game Semantics.} As for standard $\mu^p$-calculus, the semantics 
+of a vectorial sentence can be defined by an obligation game 
+$G_{M,\vec\varphi}$ that results from the composition of sub-games 
+for each of the $n$-th components of the vectorial formula. 
+The value of such game is a vector of values, each corresponding to 
+$val_{G_{M,\vec\varphi}}(s, \varphi_i)$.
+%
+%
+\begin{comment}
+\subparagraph{Game Semantics.}
+The semantics of a vectorial $\mu^p$-calculus sentence 
+$\sigma_1\vec{X}_1\hdots$ $\sigma_m\vec{X}_m.\vec\varphi$ of depth $m$ and 
+height $n$ for a Markov chain $M$ is given by the obligation game 
+$G_{M,\vec\varphi}$ defined by the tuple 
+$(V,E,(V_0,V_1,V_p),\mathcal{K},\langle \alpha,O\rangle)$.
+The set of configurations of the game is the set of pairs of a location from 
+the Markov chain and a subformula in $\bigcup_{i\leq n} sub(\varphi_i)$ and, 
+since $\vec\varphi$ is a vector of modal formulas, do not contain pairs whose 
+second element is a fixpoint term.
+As a consequence of the absence of such configurations, vertices of the form 
+$(s, X_i^j)$ link directly to $(s, \varphi_i)$ and carry the relevant priority 
+$j$, which is the depth of the fixpoint that the variable $X_i^j$ binds in the 
+vectorial formula.
+The remaining components are defined exactly as in the semantics game for the 
+scalar $\mu^p$-calculus. 
+
+The value of the game $G_{M,\vec\varphi}$ on the initial location $s^{in}$ of a 
+Markov chain $M$ is the vector of values: $val_{G_{M,\vec\varphi}}\ =\ 
+val_{G_{M,\vec\varphi}}(s^{in},\varphi_1) \times\hdots\times 
+val_{G_{M,\vec\varphi}}(s^{in},\varphi_n),$ where the value of the $i$-th 
+component is $val_{G_{M,\vec\varphi}}(s^{in}, \varphi_i)$. 
+\begin{lemma}\label{lem:semVectorial}For every Markov chain $M$, every location 
+	$s$, every $\mu^p$-calculus vectorial sentence $\sigma_1\vec{X}_1\hdots$ 
+	$\sigma_m\vec{X}_m.\vec\varphi$ of height $n$, and index $i\leq n$ we have 
+	$$
+	\llbracket\sigma_1\vec{X}_1\hdots\sigma_m\vec{X}_m.\vec\varphi\downarrow_i\rrbracket^\rho_M(s)
+	= val_{G_{M,\vec\varphi}}(s, \varphi_i).
+	$$
+\end{lemma}
+\begin{proof}
+	The proof is conducted as that of Theorem 6 in \cite{CKP15} with the 
+	exception 
+	that configurations $(s,\sigma X.\varphi(X))$ do not appear in the game and 
+	those of the form $(s,X_i)$ link directly to $(s,\varphi_i)$.
+	\end{proof}
+	
+\end{comment}
+
+\section{From $\mu^p$-Calculus to p-Automata}
+We show that every qualitative $\mu^p$-calculus formula can be translated into 
+an equivalent p-automaton.
+The translation relies on the formulas satisfying some syntactic requirements.  
+\subparagraph{Well-Formedness}
+The set of well-formed $\mu^p$-calculus formulas is semantically equivalent to 
+the standard form of the calculus; however, it poses some constraints on the 
+syntax allowing for the conversion into p-automata.
+We require that the variables be bound exactly once and that well-formed 
+formulas be \emph{guarded}; that is, all the occurrences of a variable must be 
+in the scope of a next modality, which is itself in the scope of a fixpoint 
+operator.
+To this end, formulas can be re-written in guarded form, as explained in 
+\cite{KVW00,BW15}, by the iterated replacement of every open occurrence of a 
+variable $X$ by \emph{false} in least fixed point formulas and by \emph{true} 
+in greatest fixed point formulas.
+Also, we consider the probabilistic quantification operator over a bound $J$ 
+that is restricted to the set $(\lbrace \geq, > \rbrace\times [0,1])\setminus 
+\lbrace \geq 0, >1 \rbrace $; this restriction does not affect the expressive 
+power of the language since properties of the form $[\cdot]_{\geq 0}$ and 
+$[\cdot]_{>1}$ correspond to \emph{true} and \emph{false} statements.
+Moreover, we are interested in formulas where all the instances of the 
+probabilistic quantification operator $[\cdot]_J$ are directly applied to a 
+next $\bigcirc$.
+This requirement is necessary because the statements enclosed in a 
+probabilistic operator will translate into states of the corresponding 
+automaton that performs a transition moving to read the next locations of the 
+model.
+One can achieve this form by transforming the formulas according to the 
+equivalences stated in the lemma below.
+\begin{lemma}The following $\mu^{p}$-calculus formulas are semantically 
+	equivalent.
+\begin{center}
+		$\left[p\right]_J \equiv p$\\
+	$\left[\neg p\right]_J \equiv \neg p $\\
+	$\left[\varphi_1 \wedge \varphi_2\right]_J \equiv \left[\varphi_1\right]_J 
+	\wedge \left[\varphi_2\right]_J$\\
+	$\left[\varphi_1 \vee \varphi_2\right]_J \equiv \left[\varphi_1\right]_J 
+	\vee 
+	\left[\varphi_2\right]_J $\\
+	$\left[\sigma X.\varphi(X)\right]_J \equiv \left[\varphi \big(\sigma 
+	X.\varphi(X) 
+	\big)\right]_J$
+\end{center}
+\end{lemma}
+\begin{proof}
+	The proof arises from the semantics of the $\mu^p$-calculus and the fixed 
+	point 
+	axioms. 
+	\end{proof}
+\subparagraph{Translation} Let $\varphi$ be a qualitative well-formed 
+$\mu^p$-calculus formula over the set $AP$ of atomic propositions.
+The p-automaton $A_\varphi$ is the tuple $(2^{AP}, Q, \delta, \varphi^{in}, 
+\Omega)$, where $2^{AP}$ is the alphabet, $Q$ is the set of states 
+$\lbrace\bot,\top\rbrace\cup\lbrace p,\neg p, (\bigcirc \psi, c) \mid$ $\mbox{ 
+	for all }$ $p,\neg p,$ $\bigcirc\psi$ $\in sub(\varphi) \mbox{ and }c\in 
+[0\hdots 2ad(\varphi)-1] \rbrace$, the transition function $\delta$
+(and the auxiliary function $\delta_\epsilon$) is defined by the rules
+in Figure~\ref{fig:transition of a_varphi}. 
+
+\begin{figure}[bt]
+	\begin{minipage}[t]{0.38\textwidth}
+		\begin{align*}
+		\delta(p,a)&=\begin{cases} 	\top&\mbox{if }p\in a \\ 
+		\bot&\mbox{if }p\notin a \end{cases}\\	
+		\delta(\neg p,a)&=\begin{cases} 	\top&\mbox{if }p\notin a \\ 
+		\bot&\mbox{if }p\in a \end{cases}\\
+		\delta(\top,a)&=\top\\
+		\delta(\bot,a)&=\bot\\
+		\delta\big((\bigcirc\psi, c),a\big)&=\delta_\epsilon(\psi,c)
+		\end{align*}
+	\end{minipage}
+	\begin{minipage}[t]{0.57\textwidth}
+		\begin{align*}
+		\delta_\epsilon(p,c)&=p\\ 
+		\delta_\epsilon(\neg p, c)&=\neg p\\
+		\delta_\epsilon(\psi_1 \vee \psi_2, c)&=\delta_\epsilon(\psi_1,c) \vee 
+		\delta_\epsilon(\psi_2, c)\\
+		\delta_\epsilon(\psi_1 \wedge \psi_2, c)&=\delta_\epsilon(\psi_1,c) 
+		\wedge 
+		\delta_\epsilon(\psi_2, c)\\
+		\delta_\epsilon\big(\sigma 
+		X.\varphi(X),c\big)&=\delta_\epsilon\big(\varphi(X),c\big)\\
+		\delta_\epsilon\big(X,c\big)&=\delta_\epsilon\big(\varphi(X), 
+		c(X)\big)\\
+		\delta_\epsilon(\bigcirc\psi, c)&=(\bigcirc\psi, c) \\
+		\delta_\epsilon([\bigcirc\psi]_J,c)&=\llbracket (\bigcirc\psi, c) 
+		\rrbracket_J
+		\end{align*}
+	\end{minipage}
+	\caption{\label{fig:transition of a_varphi}Transition of $A_\varphi$.}
+\end{figure}
+The initial condition $\varphi^{in}$ is the expression 
+$\delta_\epsilon\big(\varphi, c(\varphi)\big)$; the priority $\Omega$ is 
+$\Omega(\bot) = 1$, $\Omega(\top)=0$, $\Omega(\bigcirc\psi,c)=c$, and maximum 
+colour otherwise.
+
+Transitions of $A_\varphi$ always consume the input label $a$ of a 
+location in a Markov chain and move forward to its successors.
+The computation starts from the states within the initial condition 
+$\varphi^{in}$.
+From a state $p$ or $\neg p$, the p-automaton reads the current label $a$ and 
+moves to one of the special states $\top$ or $\bot$ defining an infinite 
+computation that is accepting or rejecting, respectively.
+When in a state $(\bigcirc \psi, c)$ reading a label $a$, the p-automaton moves 
+to a new set of states determined by unfolding the formula $\psi$ through the 
+epsilon transition function $\delta_\epsilon$.
+The outcome of $\delta_\epsilon$, as well as of $\delta$, is a positive boolean 
+formula over states $q$ and bounded states $\llbracket q \rrbracket_J$ that 
+represents the requirement from the system.
+States within such formula are evaluated over the successor locations in $M$.
+Acceptance of a Markov chain $M$ by the p-automaton $A_\varphi$ is decided by 
+the \emph{acceptance game} $G_{M,A_\varphi}$: if the value in such game of the 
+initial configuration is 1 $M$ is accepted, otherwise, it is rejected. 
+%
+
+The following theorem states the correctness of the translation 
+from $\mu^p$-calculus into p-automata.
+\begin{theorem}\label{the:MupToPaut}
+	Let $\varphi$ be a well-formed $\mu^p$-calculus formula and $A_\varphi$ the 
+	automaton resulting from its translation. 
+	Then, $\varphi$ and $A_\varphi$ are equivalent: the set of Markov chains 
+	that 
+	satisfy the formula $\varphi$ corresponds to the language 
+	$\mathcal{L}(A_\varphi)$ recognised by the p-automaton $A_\varphi$.
+	That is, 
+	$M\!\models\!\varphi$ \emph{iff} $M\!\in\!\mathcal{L}(A_\varphi)$.
+\end{theorem}
+The proof is conducted by showing that for all Markov chains $M$ the 
+\emph{acceptance game} $G_{M,A_\varphi}$ simulates the \emph{semantics game} 
+$G_{M, \varphi}$.
+In particular, there is a mapping between prefixes of paths in the two games, 
+within which probabilities, obligations, and infinite winning sets are 
+preserved.
+Therefore, the acceptance game has the same value as that of the semantics 
+game, leading the p-automaton $A_\varphi$ to accept all the Markov chains that 
+satisfy the formula $\varphi$.
+
+\section{From p-Automata to $\mu^p$-Calculus}
+We show that every p-automaton can be translated into an equivalent 
+$\mu^p$-calculus formula.
+Transitions of p-automata define an infinite computation tree whose nodes are 
+states marked by priorities.
+The sequence of such priorities within the paths of the tree determines whether 
+the computation is accepted or not: infinitely many visits to a minimal even 
+priority mean acceptance, whereas passing infinitely often through a minimal 
+odd priority causes rejection.
+All these elements have their analogue in $\mu^p$-calculus: transitions and 
+modal formulas, applying a transition from a state and passing through 
+variables, odd/even priorities and least/greatest fixpoints, and levels of 
+priorities and nesting of fixpoint formulas.
+We exploit this analogy in the conversion from p-automata to $\mu^p$-calculus, 
+using the syntax that most emphasises the role of each component, the vectorial 
+form.
+%
+\subparagraph{Translation}Let $A$ be a p-automaton over the set $AP$ of atomic 
+propositions defined by the tuple $(2^{AP}, Q, \delta, \varphi^{in}, \Omega)$, 
+with $n$ the number of states of the automaton.  
+Let $i_1,\hdots,i_m$ be the ordered chain of increasing priorities in the set 
+$\bigcup_{q\in Q}\Omega(q)$.
+For each index $j\leq m$ we introduce a vector $\vec{X}_{i_j}$ of $n+1$ fresh 
+variables.
+The first variable of each $j$-th vector is a dummy variable that refers to the 
+initial condition of the automaton, and we indicate it as $X^{in}_{i_j}$.
+The remaining $n$ variables of each $j$-th vector bind the $n$ formulas 
+corresponding to the transitions that the p-automaton $A$ performs from each of 
+its $n$ states; we write such variables as $X^1_{i_j},\hdots,X^n_{i_j}$.
+Accounting for the initial condition of the automaton as the first component of 
+these vectors allows one to retrieve the semantics of the resulting formula as 
+the semantics of its first element.
+As a consequence, the ordering of the other $n$ components is not relevant.
+In order to turn states into variables we use the following function $t$:
+\begin{center}
+
+$t(\theta_1 \vee \theta_2) \ =\ t(\theta_1) \vee t(\theta_2)$\\
+$t(\theta_1 \wedge \theta_2) \ =\ t(\theta_1) \wedge t(\theta_2)$\\
+$t(\llbracket q \rrbracket_J) =\ [X^q_{\Omega(q)}]_J$\\
+$t(q) \ =\ X^q_{\Omega(q)}$\\
+\end{center}
+We employ this function in the definition of the vector $\vec\varphi$ of modal 
+$\mu^p$-formulas.
+The first component of $\vec\varphi$ is $t(\varphi^{in})$, the other $n$ 
+components are denoted by $\varphi^k$ for $k\leq n$ and are specified by the 
+following modal formula
+$$\varphi^k\ =\ \bigvee\limits_{a \in 2^{AP}}\left( \bigcirc\ t 
+\left(\delta\left(q^k,a\right)\right) \wedge \bigwedge\limits_{p\in a}p\ \wedge 
+\bigwedge_{p\notin a} \neg p\right).$$
+Finally, the vectorial $\mu^p$-calculus formula $\vec\varphi_A$ is defined as 
+the prefix 
+chain of ordered fixpoints and vectors enclosing $\vec\varphi$, 
+where $\sigma_{i_j}=\mu$ if $i_j$ is odd or $\sigma_{i_j}=\nu$ 
+if $i_j$ is even:
+$$
+\vec{\varphi}_A\ =\ 
+\sigma_{i_1} 
+\begin{pmatrix}
+X^{in}_{i_1}\\[0.3em]
+X^{1}_{i_1}\\%[0.3em]
+\vdots\\%[0.3em]
+X^{n}_{i_1}\\
+\end{pmatrix}
+\hdots
+\sigma_{i_m} 
+\begin{pmatrix}
+X^{in}_{i_m}\\[0.3em]
+X^{1}_{i_m}\\%[0.3em]
+\vdots\\%[0.3em]
+X^{n}_{i_m}\\
+\end{pmatrix}
+.
+\begin{pmatrix}
+\ t\left(\varphi^{in}\right)\ \\[0.3em]
+\varphi^1\\%[0.3em]
+\vdots\ \\%[0.3em]
+\varphi^n
+\end{pmatrix}.
+$$
+The semantics of the vectorial formula $\vec\varphi_A$ for a Markov chain $M$ 
+and a valuation $\rho$ is the semantics of its first component over the initial 
+location $s^{in}$ of $M$ and it is equivalent to the value of the configuration 
+$\left(s^{in}, t\left(\varphi^{in}\right)\right)$ in the semantics game 
+$G_{M,\vec\varphi_A}$.
+That is, $\llbracket \vec\varphi_A\downarrow_1\rrbracket^\rho_M(s^{in})\ =\ 
+val_{G_{M,\vec\varphi_A}}\left(s^{in},t\left(\varphi^{in}\right)\right)$.
+
+It is worth noticing that only a maximum of $n$ out of 
+$m\times(n+1)$ variables are bound within the formula $\vec\varphi_A$.
+Therefore, $\vec\varphi_A$ can be seen as a system of $n+1$ equations in $n$ 
+variables that can be reduced by substitution and Gauss elimination techniques 
+to a single scalar $\mu^p$-calculus sentence (see \cite{Sch04}).
+In particular, it is sufficient to derive a solution, or expression, for each 
+of the $n$ variables and by syntactical substitution embed such expressions in 
+$t(\varphi^{in})$.
+However, we are interested in giving a characterization in terms of semantics 
+game $G_{M,\vec\varphi_A}$, in which the effect of the syntactical substitution 
+of variables is handled by the edges connecting configurations $(s, X^k)$ to 
+$(s,\varphi^k)$.
+%
+\begin{theorem}\label{the:PautToMup}
+	Let $A$ be a p-automaton over the set $AP$ of atomic propositions and 
+	$\vec\varphi_A$ the vectorial $\mu^p$-calculus formula resulting from its 
+	conversion.
+	Then, $A$ and $\vec\varphi_A$ are equivalent: the set of Markov chains that 
+	constitute the language $\mathcal{L}(A)$ recognised by the p-automaton $A$ 
+	coincides with the set of Markov chains that satisfy the vectorial formula 
+	$\vec\varphi_A$.
+	That is, $M\!\in\!\mathcal{L}(A)$ \emph{iff} $M\!\models\!\vec\varphi_A$.
+\end{theorem}
+Similarly to the case of the inverse translation, the proof %in Appendix 
+%\ref{app:second}
+shows that the semantics game $G_{M,\vec\varphi_A}$ for the 
+vectorial formula $\vec\varphi_A$ simulates the acceptance game $G_{M,A}$ for 
+the original p-automaton $A$.
+As a result, the two games have the same value and, therefore, the Markov 
+chains that satisfy the formula $\vec\varphi_A$ are exactly those that are 
+accepted by $A$.
+
+\section{Conclusion}
+The aim of this paper was to investigate the connection between 
+$\mu^p$-calculus and p-automata and to assess their equivalence in expressive 
+power.
+We presented the notion of well-formed formulas as a necessary preliminary step 
+for their translation into p-automata.
+We showed that for every well-formed $\mu^p$-calculus sentence there exists an 
+equivalent p-automaton that recognises exactly all the Markov chains that model 
+the formula.
+Conversely, we proved that for every p-automaton there is an equivalent 
+$\mu^p$-formula, in vectorial syntax, that is satisfied by the same Markov 
+chains 
+that form the language of the p-automaton.
+
+Throughout this work, obligation games have played a key linking role in 
+defining the semantics of the structures resulting from the conversions and, 
+therefore, proving the correctness of our claims.
+
+
+\bibliography{myBibliography}
+\end{document}

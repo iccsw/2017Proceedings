@@ -1,0 +1,71 @@
+\section{DALILA}\label{codesec}
+DALILA is a library for signal decomposition and reconstruction. Its first focus is Dictionary Learning (DL) described in Section \ref{background}. The fact that both the dictionary and the coefficients are learned from data allows for a more complete analysis of the results  extracting useful information about the original signals. Moreover the possibility to impose prior knowledge on the problem using penalty terms grants that the final matrices respect certain constraints.
+Examples for regularised DL are: 1) image denoising where sparsity imposition forces the most important atoms to be used and the noisy ones to be discarded; 2) pattern recognition, where the atoms of the dictionary are seen as latent patterns from which the original signals are generated.
+
+DALILA second focus is Representation Learning whose purpose is to represent the original data matrix on a new space defined by the atoms of the dictionary $\mathbf{D}$. Penalty terms can be added to impose a structure on this new representation.
+
+The learned coefficients may be used as a new representation for further tasks such as: 1) compressed sensing that exploits sparsity reducing the size of the original signal; 2) classification where, rather than considering the original signal, the coefficients are used as new features.
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.9\textwidth]{schema_Dalila}
+\caption{Diagram of DALILA library structure.
+The main core consists of the two classes which address the minimization problem.
+This depends on the class Penalty which represents a generic penalty term and that can be specialised by declaring subclasses.
+ The library also offers cross validation utilities for the free parameters tuning. }
+\label{schema}
+\end{figure}
+
+\subsection{Implementation}
+DALILA is implemented in Python. It supports different versions of Python and it is \texttt{scikit-learn} compatible. See \url{https://slipguru.github.io/dalila} for the full documentation and a quick start.
+
+DALILA has a modular and easily extendible design (see Figure \ref{schema}). The core of the library consists of two classes,  \texttt{DictionaryLearning} and \texttt{RepresentationLearning} which respectively solve the two minimisation problems in Equation (\ref{generic functional}) and (\ref{sparse coding}). These classes depend on a generic penalty term (\texttt{Penalty}) which can be specialised into different regularisers by declaring a subclass. The library is therefore easily extendible with new regularisers and flexible in the choice of the model.
+Cross validation utilities to tune the parameters of the model are provided, the two methods shown in Figure \ref{schema}, \texttt{tune\_parameters\_DL} and \texttt{tune\_parameters\_RL}, can perform the tuning by parallel or distributed computation using \texttt{dask} library \cite{dask}.\\
+
+%\textcolor{red}{In the library the loss function $\ell$, introduced in a generic form in Equation (\ref{generic functional}) and (\ref{sparse coding}), is commong to both \texttt{DictionaryLearning} and \texttt{RepresentationLearning} classes and it is the Frobenius norm of the difference between the original signal and its reconstruction, defined as Equation (\ref{square loss}).}
+
+The loss function $\ell$ introduced in a generic form in Equation (\ref{generic functional}) and (\ref{sparse coding}) is common to both \texttt{DictionaryLearning} and \texttt{RepresentationLearning} classes.
+It is implemented as the Frobenius norm of the difference between the original signal and its reconstruction, defined as Equation (\ref{square loss}).
+\begin{equation}\label{square loss}
+\ell(\textbf{X}, \textbf{CD}) = \|\textbf{X} - \textbf{CD}\|_F^2
+\end{equation}
+
+As regards the regularisation terms, called $\Phi$ and $\Psi$ in Equation (\ref{generic functional}) and (\ref{sparse coding}),  DALILA
+offers many possibilities.
+%The implementation of %as \texttt{L1Penalty}, \texttt{L2Penalty}, \texttt{ElasticNetPenalty}, \texttt{GroupLassoPenalty},
+%\texttt{LInfPenalty} and \texttt{L0Penalty} (described in Section \ref{penaltiessec}) is provided.
+In this way a proper regulariser, dependent from the task, can be chosen, during the initialisation of the \texttt{DictionaryLearning/RepresentationLearning} instances.
+In fact \texttt{DictionaryLearning/RepresentationLearning} minimisation algorithms do not depend on the penalties chosen,
+as long as the penalty classes inherit from the superclass \texttt{Penalty} and reimplement the same methods (Figure \ref{schema}).
+For a better understanding see Appendices \ref{penalty change}, \ref{new penalty}.
+\input{penalty}
+
+
+%DictionaryLearning further exposes an $L^2$-ball projection of ray 1.
+
+%After initialisation of the objects it is possible to fit the estimators on a data matrix via (alternating) proximal gradient descent.
+%Both DictionaryLearning and RepresentationLearning are implemented following the rules for the estimators of scikit-learn. This allows for using them in sklearn functions, an example is GridSearchCV that is used in the parameter research procedure.
+
+\paragraph*{Model selection}
+A critical aspect of these reconstruction techniques is constituted by the choice of the free parameters,
+ which are the number of atoms $k$ that define the dictionary and the regularisation values that weight the penalty terms.
+ This choice depends on the dataset given as input $\mathbf{X}$ and it can varies depending on different factors,
+ as the high level of noise in the measurements, the redundancy of the founded dictionary and the interpretability
+ of the solution. Given the fact that there is an infinite set of possible values for each parameter and no
+ theoretical formulation that guides to the best solution exists, the only feasible approach is to empirically solve a searching problem over the parameters space.
+
+DALILA allows for a fine tuning of the free parameters of the model on the dataset by performing a grid search based on cross validation. The best combination of parameters is selected as the one that returns the best mean score over multiple iterations. As score we use BIC (Bayesian Information Criterion) \cite{schwarz1978estimating}, shown in Equation (\ref{BIC}).
+\begin{equation}\label{BIC}
+\text{BIC} = - \text{log}(n)\cdot k - c \cdot \ell(\textbf{X},\textbf{CD})
+\end{equation}
+where $c$ is a positive constant. The highest value of the BIC corresponds to the best model in the search space.
+This procedure is available both for \texttt{DictionaryLearning} and \texttt{RepresentationLearning}.
+
+The two procedures, \texttt{tune\_parameters\_DL} and \texttt{tune\_parameters\_RL}, allow the user to specify different search modalities.
+In \texttt{tune\_parameters\_DL} the user can choose among different configurations.
+\begin{itemize}
+\item tuning the number of atoms together with the dictionary penalty and after searching the regularisation parameter on the coefficients;
+\item fixing the number of atoms in the estimator and tuning the penalties together;
+\item fixing the penalties values and tuning the best number of atoms;
+\item tuning all the possible value together, number of atoms and regularisation parameters, analysing every possible combination in the grid.
+\end{itemize}

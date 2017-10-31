@@ -1,0 +1,87 @@
+@article{olshausenfield1996,
+author={Olshausen,Bruno A. and Field,David J.},
+year={1996},
+title={\textsl{Emergence of simple-cell receptive field properties by learning a sparse code for natural images}},
+journal={Nature},
+volume={381},
+number={6583},
+pages={607-9},
+keywords={Environmental Studies; Sensory perception; Neurology; Eyes & eyesight; Learning; Algorithms; Models, Neurological; Visual Cortex -- cytology; Visual Cortex -- physiology; Neurons -- physiology; Vision, Ocular -- physiology},
+isbn={00280836},
+language={English},
+url={https://search.proquest.com/docview/204469628?accountid=15964},
+} 
+%month={Jun 13},
+%note={Copyright - Copyright Macmillan Journals Ltd. Jun 13, 1996; Last updated - 2012-11-14; CODEN - NATUAS},
+
+
+@article{Mairal2010,
+ author = {Mairal, Julien and Bach, Francis and Ponce, Jean and Sapiro, Guillermo},
+ title = {\textsl{Online Learning for Matrix Factorization and Sparse Coding}},
+ journal = {Journal of Machine Learning Research},
+ volume = {11},
+ year = {2010},
+ issn = {1532-4435},
+ pages = {19--60},
+ numpages = {42},
+ url = {http://dl.acm.org/citation.cfm?id=1756006.1756008},
+ acmid = {1756008},
+ publisher = {JMLR.org},
+} 
+%issue_date = {3/1/2010},
+% month = mar,
+
+
+@article{Lin2007,
+author={Chih-Jen Lin},
+journal={Neural Computation},
+title={\textsl{Projected Gradient Methods for Nonnegative Matrix Factorization}},
+year={2007},
+volume={19},
+number={10},
+pages={2756-2779},
+doi={10.1162/neco.2007.19.10.2756},
+ISSN={0899-7667},
+}
+%month={Oct},
+
+
+@article{cichocki2009fast,
+  title={\textsl{Fast local algorithms for large scale nonnegative matrix and tensor factorizations}},
+  author={Cichocki, Andrzej and Anh-Huy, PHAN},
+  journal={IEICE transactions on fundamentals of electronics, communications and computer sciences},
+  volume={92},
+  number={3},
+  pages={708--721},
+  year={2009},
+  publisher={The Institute of Electronics, Information and Communication Engineers}
+}
+
+@article{tibshirani1996regression,
+  title={Regression shrinkage and selection via the lasso},
+  author={Tibshirani, Robert},
+  journal={Journal of the Royal Statistical Society. Series B (Methodological)},
+  pages={267--288},
+  year={1996},
+  publisher={JSTOR}
+}
+
+@book{tikhonov1977solutions,
+  title={Solutions of ill-posed problems},
+  author={Tikhonov, Andre{\u\i} Nikolaevich and Arsenin, Vasili{\u\i}} Iakovlevich and John, Fritz},
+  volume={14},
+  year={1977},
+  publisher={Winston Washington, DC}
+}
+
+
+@article{tropp2006just,
+  title={Just relax: Convex programming methods for identifying sparse signals in noise},
+  author={Tropp, Joel A},
+  journal={IEEE transactions on information theory},
+  volume={52},
+  number={3},
+  pages={1030--1051},
+  year={2006},
+  publisher={IEEE}
+}
