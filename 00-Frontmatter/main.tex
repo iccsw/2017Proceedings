@@ -1,0 +1,361 @@
+\documentclass[a4paper,UKenglish]{oasicsmaster}
+\usepackage{microtype}%if unwanted, comment out or use option "draft"
+
+\graphicspath{{../graphics/}}%helpful if your graphic files are in another directory
+
+\bibliographystyle{plain}% the recommended bibstyle
+
+
+\title{\huge 2015 Imperial College Computing Student Workshop}
+
+\subtitle{ICCSW'15, September 24--25, 2015, London, United Kingdom}
+
+\editor{Claudia Schulz\\ Daniel Liew}
+
+\volumeinfo
+  {Claudia Schulz and Daniel Liew}% editors
+  {2}% number of editors: 1, 2, ....
+  {2015 Imperial College Computing Student Workshop (ICCSW 2015)}% event
+  {49}% volume: please ask the editorial office before starting typesetting
+  {1}% issue
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
+  {-1} %%%%%%%%%%%%%%%% NOT SURE ABOUT THIS, NEEDS CHECKING!!!!!!!!!!!!!!!!!!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\EventShortName{ICCSW'15}
+\DOI{10.4230/OASIcs.ICCSW.2015.1}
+  
+\titlepagebottomline{OASIcs -- Vol. 49 -- ICCSW'15 \qquad \qquad \qquad \qquad  www.dagstuhl.de/oasics}%some text line for the yellow box on the titlepage
+
+\serieslogo{iccsw15}%please provide filename (without suffix)
+
+
+\begin{document}
+
+\frontmatter
+
+\maketitle
+
+\begin{publicationinfo}%for page ii, please fill as required
+\sffamily
+
+\emph{Editors} \\[0.2cm]
+\begin{tabular}{ll}
+Claudia Schulz              &   Daniel Liew   \\
+Department of Computing                  & Department of Computing \\
+180 Queen's Gate, London, SW7 2AZ        & 180 Queen's Gate, London SW7 2AZ \\
+United Kingdom                           & United Kingdom \\
+\texttt{claudia.schulz@imperial.ac.uk} &  \texttt{daniel.liew@imperial.ac.uk}
+\end{tabular}
+\ \\
+
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+\emph{ACM Classification 1998}\\
+\textbf{A.0. Conference Proceedings}
+
+\bigskip
+\bigskip
+
+{\Large\bf\sffamily \href{http://www.dagstuhl.de/dagpub/978-3-95977-000-2}{ISBN 978-3-95977-000-2}}
+
+\bigskip
+\bigskip
+
+\emph{Published online and open access by}\newline
+Schloss Dagstuhl -- Leibniz-Zentrum f\"ur Informatik GmbH, Dagstuhl Publishing, Saarbr\"ucken/Wadern, Germany. Online available at \href{http://www.dagstuhl.de/dagpub/978-3-95977-000-2}{http://www.dagstuhl.de/dagpub/978-3-95977-000-2}.
+
+\bigskip
+\emph{Publication date}\newline
+\textbf{September, 2015}
+
+\bigskip
+\bigskip
+
+\emph{Bibliographic information published by the Deutsche Nationalbibliothek}\newline
+The Deutsche Nationalbibliothek lists this publication in the Deutsche Nationalbibliografie; detailed bibliographic data are available in the Internet at \href{http://dnb.d-nb.de}{http://dnb.d-nb.de}. 
+
+\bigskip
+
+\emph{License}\newline
+This work is licensed under a Creative Commons Attribution 3.0 Unported license (CC-BY~3.0): \texttt{http://creativecommons.org/licenses/by/3.0/legalcode}.\\
+In brief, this license authorizes each and everybody to share (to copy, distribute and transmit) the work under the following conditions, without impairing or restricting the authors' moral rights:
+\marginpar{\hspace*{0.2\marginparwidth}\includegraphics[width=0.75\marginparwidth]{cc-by.pdf}}
+
+\begin{itemize}
+\item Attribution: The work must be attributed to its authors.
+\end{itemize}
+
+\smallskip
+
+The copyright is retained by the corresponding authors.
+
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+
+Digital Object Identifier: \href{http://dx.doi.org/10.4230/OASIcs.ICCSW.2015.i}{10.4230/OASIcs.ICCSW.2015.i}
+
+\vfill
+\textbf{\href{http://www.dagstuhl.de/dagpub//978-3-95977-000-2}{ISBN /978-3-95977-000-2}}\qquad \qquad \textbf{\href{http://drops.dagstuhl.de/oasics}{ISSN 2190-6807}}  \hfill \textbf{\href{http://www.dagstuhl.de/oasics}{http://www.dagstuhl.de/oasics}}
+
+
+ % Published by: ...\\
+  %ISBN: ...
+  
+ \newpage
+
+\ \\
+\bigskip
+\bigskip
+\bigskip
+
+{\Large OASIcs -- OpenAccess Series in Informatics}
+ 
+ \bigskip
+OASIcs aims at a suitable publication venue to publish peer-reviewed collections of papers emerging from a scientific event.
+OASIcs volumes are published according to the principle of Open Access, i.e., they are available online and free of charge. 
+
+ 
+ \bigskip
+ \bigskip
+ \bigskip
+ 
+ 
+\emph{Editorial Board}
+
+\begin{itemize}
+\item Daniel Cremers (TU M\"unchen, Germany)
+\item Barbara Hammer (Universit\"at Bielefeld, Germany)
+\item Marc Langheinrich (Universit\`a della Svizzera Italiana -- Lugano, Switzerland)
+\item Dorothea Wagner (\emph{Editor-in-Chief}, Karlsruher Institut f\"{u}r Technologie, Germany)
+ \end{itemize}
+
+
+ \bigskip
+ \bigskip
+ \bigskip
+
+
+{\large\bf\sffamily \href{http://drops.dagstuhl.de/oasics}{ISSN 2190-6807}}
+
+ \bigskip
+ \bigskip
+ \bigskip
+
+{\Large\bf\sffamily \href{http://www.dagstuhl.de/oasics}{www.dagstuhl.de/oasics}}
+ 
+ \vfill
+ 
+ \newpage
+ 
+ \thispagestyle{empty}
+ 
+\end{publicationinfo}
+
+
+% \begin{dedication}%please fill or comment out
+%   Insert dedication here.
+% \end{dedication}
+
+
+\begin{contentslist}
+%To generate the table of contents copy all the .vtc files
+%of the contributions to your working directory.
+%For every contribution type a line
+%\inputtocentry{dummycontribution}
+%where the argument of \inputtocentry is the name of
+%the vtc file without suffix.
+
+%Alternatively write e.g.
+% \contitem
+% \title{Preface}
+% \author{John Q. Open}
+% \page{i}
+% 
+% %\part{} %use if volume is divided in parts
+% \part{Regular Papers}
+% 
+% \contitem
+% \title{Mmmmm...donuts}
+% \author{Homer J. Simpson}
+% \page{1}
+
+
+\part{Keynotes}
+
+\inputtocentry{01}
+\inputtocentry{02}
+
+\part{Regular Papers}
+
+\inputtocentry{03}
+\inputtocentry{04}
+\inputtocentry{05}
+\inputtocentry{06}
+\inputtocentry{07}
+\inputtocentry{08}
+\inputtocentry{09}
+\inputtocentry{10}
+\inputtocentry{11}
+\inputtocentry{12}
+\inputtocentry{13}
+
+
+\end{contentslist}
+
+
+
+\chapter{Preface}  %please fill or comment out
+
+\input{preface}
+
+\chapter{Conference Organisation}
+
+\section*{Organising Committee}
+
+\begin{tabularx}{\textwidth}{p{0.45\textwidth}l}
+Kristijonas \u{C}yras          & Imperial College London\\
+Casper da Costa-Luis           & Imperial College London\\
+Martin Ingram                  & Imperial College London\\
+Bertan Kavuncu                 & Imperial College London\\
+Daniel Liew                    & Imperial College London\\
+Luo Mai                        & Imperial College London\\
+Pedro Martinez Mediano         & Imperial College London\\
+Feryal Mehraban Pour Behbahani & Imperial College London\\
+Kyriacos Nikiforou             & Imperial College London\\
+Claudia Schulz                 & Imperial College London\\
+Doniyor Ulmasov                & Imperial College London\\
+Silvia Vinyes Mora             & Imperial College London\\
+Jacek Zienkiewicz              & Imperial College London\\
+\end{tabularx}
+
+\begin{minipage}{0.45\linewidth}
+  \includegraphics[height=5em]{acm-chapter}
+\end{minipage}
+\begin{minipage}{0.50\linewidth}
+  \small
+  Imperial College London\\
+  ACM Student Chapter\\
+  \url{http://acm.doc.ic.ac.uk/}
+\end{minipage}
+\newpage
+
+\section*{Ambassadors}
+
+\begin{tabularx}{\textwidth}{p{0.45\textwidth}l}
+Sami Alajrami		& Newcastle University\\
+Abdallah Arioua 	& University of Montpellier\\
+Shaswar Baban 		& Kings College London\\
+Gabriel Barata		& University of Lisbon\\
+Evgenij Belikov 	& Heriot-Watt University\\
+Tarek Besold		& University of Osnabr\"{u}ck\\
+Guido Boella 		& University of Turin\\
+Benoit Desouter		& Ghent University\\
+Emmanuelle Dietz	& Dresden University of Technology\\
+Stefan Ellmauthaler 	& Leipzig University\\
+Jorge Fandi\~{n}o	& University of A Coru\~{n}a\\
+Manoel Franca		& City University London\\
+Virginia Grande		& Uppsala University\\
+Carlos A.S.J. Gulo	& University of the State of Mato Grosso\\
+Evgenios Hadjisoteriou 	& University of Cyprus\\
+Haruna Isah		& University of Bradford\\
+Mathilde Janier		& University of Dundee\\
+Amin Mobasheri 		& Heidelberg University\\
+Tiago Oliveira		& University of Minho\\
+Sandro Pinto 		& University of Minho\\
+Thomas Sch\"{o}n 	& Uppsala University\\
+Zohreh Shams 		& University of Bath\\
+Christof Spanring 	& University of Liverpool \& Vienna University of Technology\\
+Bas van Gijzel 		& University of Nottingham\\
+Agnieszka Zbrzezny 	& Cz\k{e}stochowa University of Technology\\
+\end{tabularx}
+\newpage
+
+\section*{External Reviewers}
+
+\begin{tabularx}{\textwidth}{p{0.45\textwidth}l}
+Evgenij Belikov		& Heriot-Watt University\\
+\'{A}lvaro C\^{a}mara	& University of Porto\\
+Khaled El-Abbasy	& University of Westminster\\
+Jorge Fandi\~{n}o	& University of A Coru\~{n}a\\
+Virginia Grande		& Uppsala University\\
+Evgenios Hadjisoteriou 	& University of Cyprus\\
+Haruna Isah		& University of Bradford\\
+Carlos A.S.J. Gulo	& University of the State of Mato Grosso\\
+Olfat Mirza		& University of Warwick\\
+Tiago Oliveira		& University of Minho\\
+Hasmik Osipyan		& National Polytechnic University of Armenia\\
+Simone Prado		& S\~{a}o Paulo State University\\
+Thiago R\'{u}bio	& Federal Center for Technological Education of Minas Gerais\\
+F.Sharmila Satthar	& University of Brighton\\
+Julius Sch\"{o}ning	& University of Osnabr\"{u}ck\\
+Ant\'{o}nio Silva	& University of Minho\\
+Maciej Skorski		& University of Warsaw\\
+Christof Spanring 	& University of Liverpool\\
+Shazia Tabassum		& University of Porto\\
+Agnieszka Zbrzezny 	& Cz\k{e}stochowa University of Technology\\
+Jian Zhang		& University of Dundee\\
+\end{tabularx}
+
+\chapter{Supporters and Sponsors}
+
+\section*{Supporting Scientific Institutions}
+\bigskip
+
+\noindent
+\begin{minipage}{0.6\textwidth}
+  \begin{center}
+  \includegraphics[height=5em]{imperial}
+  \end{center}
+\end{minipage}
+\begin{minipage}{0.39\textwidth}
+  Imperial College London\\
+  \url{http://www.imperial.ac.uk/}
+\end{minipage}
+
+\bigskip
+\section*{Platinum Sponsors}
+\bigskip
+
+\noindent
+\begin{minipage}{0.6\textwidth}
+  \begin{center}
+  \includegraphics[height=5em]{google}
+  \end{center}
+\end{minipage}
+\begin{minipage}{0.39\textwidth}
+  Google Inc.\\
+  \url{http://www.google.com/}
+\end{minipage}
+
+\bigskip
+\section*{Bronze Sponsors}
+\bigskip
+
+\noindent
+\begin{minipage}{0.6\textwidth}
+  \begin{center}
+  \includegraphics[height=5em]{arm}
+  \end{center}
+\end{minipage}
+\begin{minipage}{0.39\textwidth}
+ARM Holdings, plc.\\
+\url{http://www.arm.com/}
+\end{minipage}
+
+% 
+% \begin{participants}
+% \chapter[Authors]{List of Authors}
+% %use \participant for every author, eg.:
+% \participant John Q. Public\\ 
+%   Dummy University Computing Laboratory\\
+%   Address, Country\\
+%   johnqpublic@dummyuni.org
+% 
+% \end{participants} 
+
+
+\end{document}
