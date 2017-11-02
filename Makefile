@@ -2,7 +2,7 @@ DIR_FRONT = 00-Frontmatter/
 DIR_FRONT_ABS = 00-Frontmatter-Abs/
 
 #~ find . -maxdepth 2 -iname 'main.tex' -exec dirname \{} \; | sort | tail -n +2 | cut -b3-
-DIRS = $(addsuffix /,01-Dibona 02-Mueller 03-Belikov 04-El-Abbasy 05-Gulo 06-Hadjisoteriou 07-Hasmik 08-Satthar 09-Schoening 10-Silva 11-Spanring 12-Zbrzezny 13-Zhang)
+DIRS = $(addsuffix /,01-Jones 02-Swirski 03-Cauli 04-El-Sanosi 05-Stamford 06-Tozzo 07-Winblad 08-Alnaim 09-Capuccini 10-Kurz)
 
 # Requires `main.tex` in all directories
 FRONT = $(addsuffix main.pdf, $(DIR_FRONT))
@@ -15,21 +15,21 @@ ABS = $(addsuffix main_abs.pdf, $(DIRS))
 
 .PHONY : all clean
 
-both : iccsw2015.pdf iccsw2015-abstracts.pdf
+both : iccsw.pdf iccsw-abstracts.pdf
 
-iccsw2015.pdf : $(FRONT)
+iccsw.pdf : $(FRONT)
 	pdfjoin $(FRONT) $(PAPERS) --outfile $@
 
-iccsw2015-abstracts.pdf : $(FRONT_ABS)
+iccsw-abstracts.pdf : $(FRONT_ABS)
 	pdfjoin $(FRONT_ABS) $(ABS) --outfile $@
 
 all : $(FRONT) $(FRONT_ABS)
 
 clean :
-	rm -f $(PAPERS) $(PAPERS:%.pdf=%.aux) $(PAPERS:%.pdf=%.bbl) $(PAPERS:%.pdf=%.blg) $(PAPERS:%.pdf=%.log) $(PAPERS:%.pdf=%.out)
+	rm -f $(PAPERS) $(PAPERS:%.pdf=%.aux) $(PAPERS:%.pdf=%.bbl) $(PAPERS:%.pdf=%.blg) $(PAPERS:%.pdf=%.log) $(PAPERS:%.pdf=%.out) $(PAPERS:%.pdf=%.vtc)
 	rm -f $(FRONT) $(FRONT:%.pdf=%.aux) $(FRONT:%.pdf=%.bbl) $(FRONT:%.pdf=%.blg) $(FRONT:%.pdf=%.log) $(FRONT:%.pdf=%.out)
-	rm -f $(ABS) $(ABS:%.pdf=%.tex) $(ABS:%.pdf=%.aux) $(ABS:%.pdf=%.bbl) $(ABS:%.pdf=%.blg) $(ABS:%.pdf=%.log) $(ABS:%.pdf=%.out)
-	rm -f $(FRONT_ABS) $(FRONT_ABS:%.pdf=%.aux) $(FRONT_ABS:%.pdf=%.bbl) $(FRONT_ABS:%.pdf=%.blg) $(FRONT_ABS:%.pdf=%.log) $(FRONT_ABS:%.pdf=%.out)
+	rm -f $(ABS) $(ABS:%.pdf=%.tex) $(ABS:%.pdf=%.aux) $(ABS:%.pdf=%.bbl) $(ABS:%.pdf=%.blg) $(ABS:%.pdf=%.log) $(ABS:%.pdf=%.out) $(ABS:%.pdf=%.vtc)
+	rm -f $(FRONT_ABS) $(FRONT_ABS:%.pdf=%.aux) $(FRONT_ABS:%.pdf=%.bbl) $(FRONT_ABS:%.pdf=%.blg) $(FRONT_ABS:%.pdf=%.log) $(FRONT_ABS:%.pdf=%.out) 
 
 # Frontmatter
 $(FRONT) : $(DIR_FRONT)main.tex $(PAPERS)

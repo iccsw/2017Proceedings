@@ -3,7 +3,7 @@
 # Exit on error
 set -e
 
-SKIP_BIBTEX=(00-Frontmatter 00-Frontmatter-Abs 01-Dibona 02-Mueller 04-El-Abbasy 07-Hasmik)
+SKIP_BIBTEX=(00-Frontmatter 00-Frontmatter-Abs 01-Jones 02-Swirski 08-Alnaim 10-Kurz 05-Stamford)
 FRONT_PAGE_OFFSET="0"
 
 function usage()
@@ -80,7 +80,7 @@ done
 if [ $# -eq 0 ]; then
   # Needs vtc files from all other papers
   build 00-Frontmatter-Abs/
-  pdfjoin */main_abs.pdf --outfile iccsw2015.pdf
+  pdfjoin */main_abs.pdf --outfile iccsw.pdf
   build 00-Frontmatter/
-  pdfjoin */main.pdf --outfile iccsw2015.pdf
+  pdfjoin */main.pdf --outfile iccsw.pdf
 fi
