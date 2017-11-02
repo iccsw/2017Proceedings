@@ -3,7 +3,7 @@
 # Exit on error
 set -e
 
-SKIP_BIBTEX=(00-Frontmatter 00-Frontmatter-Abs 01-Jones 02-Swirski 08-Alnaim 10-Kurz 05-Stamford)
+SKIP_BIBTEX=(00-Frontmatter 00-Frontmatter-Abs 01-Jones 02-Swirski 06-Stamford 05-Kurz 09-Alnaim)
 FRONT_PAGE_OFFSET="0"
 
 function usage()
