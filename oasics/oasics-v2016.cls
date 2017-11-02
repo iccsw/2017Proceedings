@@ -145,7 +145,7 @@
 \def\copyrightline{%
   \ifx\@EventLogo\@empty
   \else
-    \setbox\@tempboxa\hbox{\includegraphics[height=42\p@]{\@EventLogo}}%
+    \setbox\@tempboxa\hbox{\includegraphics[height=28\p@]{\@EventLogo}}%
     \rlap{\hspace\textwidth\hspace{-\wd\@tempboxa}\hspace{\z@}%
           \vtop to\z@{\vskip-0mm\unhbox\@tempboxa\vss}}%
   \fi
