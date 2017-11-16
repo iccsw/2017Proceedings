@@ -1,0 +1,385 @@
+%This is a template for producing OASIcs conference volumes.
+%The usage of this file together with oasicsmaster-v2016.cls should be
+%straightforward. There is no separate documentation.
+
+\documentclass[a4paper,UKenglish]{oasicsmaster-v2016}
+ %for A4 paper format use option "a4paper", for US-letter use option "letterpaper"
+ %for british hyphenation rules use option "UKenglish", for american hyphenation rules use option "USenglish"
+
+\usepackage{microtype}%if unwanted, comment out or use option "draft"
+
+
+\newcommand{\VolumeISBN}{424-2-424242-424-2}
+
+\graphicspath{{../graphics/}}%helpful if your graphic files are in another directory
+
+\bibliographystyle{plainurl}% the recommnded bibstyle
+
+
+\title{\huge 2017 Imperial College Computing Student Workshop}
+
+\subtitle{ICCSW'17, September 26--27, 2017, London, United Kingdom}
+
+\editor{Fergus Leahy\\ Juliana Franco}
+
+\EventEditors{Fergus Leahy and Juliana Franco}
+\EventNoEds{2}
+\EventLongTitle{2017 Imperial College Computing Student Workshop (ICCSW 2017)}
+\EventShortTitle{ICCSW 2017}
+\EventAcronym{ICCSW}
+\EventYear{2017}
+\EventDate{September 26—-27, 2017}
+\EventLocation{London, UK}
+\EventLogo{}
+\SeriesVolume{60}
+\ArticleNo{0}
+
+\titlepagebottomline{OASIcs -- Vol.~60 -- ICCSW'17 \qquad \qquad \qquad www.dagstuhl.de/oasics}%some text line for the yellow box on the titlepage
+
+\serieslogo{iccsw17}%please provide filename (without suffix)
+
+
+\begin{document}
+
+\frontmatter
+
+%%
+%% PAGE 1: Cover page
+%%%
+
+\maketitle
+
+%%
+%% PAGE 2: Bibliographic data (editors, ACM classification, ISBN, license, DOI, ...)
+%% 
+
+\begin{publicationinfo}%for page ii, please fill as required
+\sffamily
+
+\emph{Editors} \\[0.2cm]
+\begin{tabular}{ll}
+Fergus Leahy              &   Juliana Franco   \\
+Department of Computing                  & Department of Computing \\
+180 Queen's Gate, London, SW7 2AZ        & 180 Queen's Gate, London SW7 2AZ \\
+United Kingdom                           & United Kingdom \\
+\texttt{fergus.leahy@imperial.ac.uk} &  \texttt{juliana.franco@imperial.ac.uk}
+\end{tabular}
+\ \\
+
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+\emph{ACM Classification 1998}\\
+D.1.3 Concurrent Programming, 
+D.2.2 Design Tools and Techniques, 
+D.2.8 Performance measures, 
+D.2.11 Software Architectures,
+D.3.3 - Language Constructs and Features, 
+D.4.7 Distributed systems, D.4.8 Performance, 
+E.1 Trees,
+F.1.2. Models of Computation - Probabilistic Computation, 
+F.4.1. Mathematical Logic, 
+F.4.2. Formal Languages, 
+G.1.6 Optimization,  
+G.3 Probability and Statistics, 
+H.2.4 Concurrency, 
+H.5.2 User Interfaces, 
+I.2.6 Learning, 
+K.0 General, 
+K.2 History of Computing.
+
+\bigskip
+\bigskip
+
+{\Large\bf\sffamily \href{http://www.dagstuhl.de/dagpub/\VolumeISBN}{ISBN \VolumeISBN}}
+
+\bigskip
+\bigskip
+
+\emph{Published online and open access by}\newline
+Schloss Dagstuhl -- Leibniz-Zentrum f\"ur Informatik GmbH, Dagstuhl Publishing, Saarbr\"ucken/Wadern, Germany. Online available at \href{http://www.dagstuhl.de/dagpub/\VolumeISBN}{http://www.dagstuhl.de/dagpub/\VolumeISBN}.
+
+\bigskip
+\emph{Publication date}\newline
+\textcolor{red}{(To be completed: Month, Year)}
+
+\bigskip
+\bigskip
+
+\emph{Bibliographic information published by the Deutsche Nationalbibliothek}\newline
+The Deutsche Nationalbibliothek lists this publication in the Deutsche Nationalbibliografie; detailed bibliographic data are available in the Internet at \href{http://dnb.d-nb.de}{http://dnb.d-nb.de}. 
+
+\bigskip
+
+\emph{License}\newline
+This work is licensed under a Creative Commons Attribution 3.0 Unported license (CC-BY~3.0): \texttt{http://creativecommons.org/licenses/by/3.0/legalcode}.\\
+In brief, this license authorizes each and everybody to share (to copy, distribute and transmit) the work under the following conditions, without impairing or restricting the authors' moral rights:
+\marginpar{\hspace*{0.2\marginparwidth}\includegraphics[width=0.75\marginparwidth]{cc-by.pdf}}
+\begin{itemize}
+\item Attribution: The work must be attributed to its authors.
+\end{itemize}
+
+\smallskip
+
+The copyright is retained by the corresponding authors.
+
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+
+Digital Object Identifier: \href{http://dx.doi.org/10.4230/OASIcs.CVIT.2016.0}{10.4230/OASIcs.CVIT.2016.0}
+
+\vfill
+\textbf{\href{http://www.dagstuhl.de/dagpub/\VolumeISBN}{ISBN \VolumeISBN}}\qquad \qquad \textbf{\href{http://drops.dagstuhl.de/oasics}{ISSN 1868-8969}}  \hfill \textbf{\href{http://www.dagstuhl.de/oasics}{http://www.dagstuhl.de/oasics}}
+
+%%
+%% PAGE 3: OASIcs series information
+%% 
+  
+\newpage
+
+\ \\
+\bigskip
+\bigskip
+\bigskip
+
+{\Large OASIcs -- OpenAccess Series in Informatics}
+ 
+\bigskip
+ 
+OASIcs aims at a suitable publication venue to publish peer-reviewed collections of papers emerging from a scientific event.
+OASIcs volumes are published according to the principle of Open Access, i.e., they are available online and free of charge. 
+ 
+\bigskip
+\bigskip
+\bigskip
+ 
+\emph{Editorial Board}
+
+\begin{itemize}
+\item Daniel Cremers (TU M\"unchen, Germany)
+\item Barbara Hammer (Universit\"at Bielefeld, Germany)
+\item Marc Langheinrich (Universit\`a della Svizzera Italiana -- Lugano, Switzerland)
+\item Dorothea Wagner (\emph{Editor-in-Chief}, Karlsruher Institut f\"{u}r Technologie, Germany)
+ \end{itemize}
+ 
+\bigskip
+\bigskip
+\bigskip
+
+{\large\bf\sffamily \href{http://www.dagstuhl.de/dagpub/2190-6807}{ISSN 2190-6807}}
+
+\bigskip
+\bigskip
+\bigskip
+
+{\Large\bf\sffamily \href{http://www.dagstuhl.de/oasics}{http://www.dagstuhl.de/oasics}}
+ 
+\vfill
+
+%%
+%% PAGE 4: (empty)
+%% 
+ 
+\newpage
+ 
+\thispagestyle{empty}
+
+\ \\
+
+\end{publicationinfo}
+
+%%
+%% PAGE 5 and more: TOC etc.
+%% 
+
+% \begin{dedication}%please fill or comment out
+%   Insert dedication here.
+% \end{dedication}
+
+
+\begin{contentslist}
+%To generate the table of contents copy all the .vtc files
+%of the contributions to your working directory.
+%For every contribution type a line
+%\inputtocentry{dummycontribution}
+%where the argument of \inputtocentry is the name of
+%the vtc file without suffix.
+
+%Alternatively write e.g.
+% \contitem
+% \title{Preface}
+% \author{John Q. Open}
+% \page{0:vii}
+
+% %\part{} %use if volume is divided in parts
+% \part{Regular Papers}
+
+% \contitem
+% \title{Mmmmm $\ldots$ donuts}
+% \author{Homer J. Simpson}
+% \page{1:1--1:23}
+
+
+\part{Keynotes}
+
+\inputtocentry{01}
+\inputtocentry{02}
+
+\part{Regular Papers}
+
+\inputtocentry{03}
+\inputtocentry{04}
+\inputtocentry{05}
+\inputtocentry{06}
+\inputtocentry{07}
+\inputtocentry{08}
+
+\part{Abstracts}
+
+\inputtocentry{09}
+\inputtocentry{10}
+
+\end{contentslist}
+
+
+
+\chapter{Preface} %please fill or comment out
+
+Welcome to the 2017 Imperial College Computing Student Workshop (ICCSW’17), the sixth workshop in its series. ICCSW was initiated with a “by students, for students” spirit: a workshop organised solely by students to give student speakers the opportunity to present their work. The organising students gain
+the valuable experience of what is involved in conference organisation, including writing a call for sponsors, taking part in the reviewing process, and chairing a session. On the other hand, the participating students benefit from the interaction with international researchers who are at a similar stage in their career and developing skills in presenting their research to a non-specialist computer science audience.
+
+This volume contains the papers accepted for presentation at the 2017 Imperial College Computing Student Workshop. ICCSW’17 received 12 submissions, including both papers and abstracts, from 6 different countries. After the thorough reviewing process and discussion by members of the Imperial College ACM Student Chapter 6 papers and 2 abstracts were accepted, representing a 75\% acceptance rate.
+
+
+After a year hiatus, ICCSW was back for more, more student talks, more keynotes, more socials and a new addition of a breakfast poster session. ICCSW'17 was a great success on all fronts, with over 30 students attending a variety of interesting and novel talks, covering systems, cloud, networking, programming languages and machine learning. This year we also hosted two exciting keynotes covering Google’s V8 Javascript engine (Leszek Swirski) and How to write a great paper (Simon Peyton Jones), both of which saw upwards of 50 students and staff attend, and included some really insightful Q\&A. To their merit, students arose first thing in the morning ready to be quizzed on their work at our breakfast poster session, as inquisitive wanderers chowed down on croissants, coffee and enlightening conversation. For our social event, we invited the students and our Googler to explore the Sky Garden atop the Walkie-Talkie and took them on a tour of the surrounding London sights, including the Tower of London and Tower Bridge, before settling down for 3 courses of pizza-and-pasta-riffic food at Pizza Express.
+
+
+
+ICCSW'17 has been a great success - but absolutely could not have been done without the dedication and perserverence from the ICCSW committee, hard work and patience from the student authors, assistance from our network of ambassadors in disseminating the calls, financial support from our sponsors and the gratiutous support from the department here at Imperial; all of whom we would like to thank dearly. 
+
+We wish the best of luck to the new committee. Until next year!
+\vspace{5ex}
+
+\noindent \textbf{Juliana Franco and Fergus Leahy, \\
+ICCSW'17 Editors, \\
+Chair \& Vice-Chair,\\
+ACM Student Chapter 2016 -- 2017.}
+\vfill
+
+\newpage
+\section*{ICCSW'17 Social Photo}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.75\textwidth]{social.jpg}
+  \caption{ICCSW visits the sky garden.}
+\end{figure}
+
+\chapter{Conference Organisation}
+
+\section*{Organising Committee}
+
+\begin{tabularx}{\textwidth}{p{0.45\textwidth}l}
+Juliana Franco              & Imperial College London\\
+Fergus Leahy                & Imperial College London\\
+Kyriacos Nikiforou          & Imperial College London\\
+Simon Olofsson              & Imperial College London\\
+Mengjiao Wang               & Imperial College London\\
+Pamela Bezerra              & Imperial College London\\
+Shale Xiong                 & Imperial College London\\
+Oana Cocarascu              & Imperial College London\\
+Assel Altayeva              & Imperial College London\\
+Nick Pawlowski              & Imperial College London\\
+Casper da Costa-Luis        & Imperial College London\\
+\end{tabularx}
+
+
+\begin{minipage}{0.45\linewidth}
+  \includegraphics[height=5em]{acm-chapter}
+\end{minipage}
+\begin{minipage}{0.50\linewidth}
+  \small
+  Imperial College London\\
+  ACM Student Chapter\\
+  \url{http://acm.doc.ic.ac.uk/}
+\end{minipage}
+\newpage
+
+\section*{Ambassadors}
+
+\begin{tabularx}{\textwidth}{p{0.45\textwidth}l}
+Jasper Schulz & Kings College, UK \\
+Fabio Niephaus  &  Hasso-Plattnner-Institut, Germany \\
+Kiko Fernandez  &  Uppsala University, Sweden \\
+Phuc Vo   &  Uppsala University, Sweden \\
+Daniel Hillerstrom  &  University of Edinburgh, UK \\
+Kim-Anh Tran  &  Uppsala University, Sweden \\
+Stephan McQuistin  & University of Glasgow, UK \\
+Marija Jegorova &  University of Edinburgh, UK \\
+Dionysis Manousakas &  University of Cambridge, UK \\
+Ana-Maria Sutii &  Eindhoven University of Technology, The Netherlands \\
+Tatjana Davidovic &  Serbian Academy of Science and Arts, Serbia \\
+Darren Matthews  & Royal Holloway, University of London, UJ \\
+\end{tabularx}
+\newpage
+
+
+
+\chapter{Supporters and Sponsors}
+
+\section*{Supporting Scientific Institutions}
+\bigskip
+
+\noindent
+\begin{minipage}{0.6\textwidth}
+  \begin{center}
+  \includegraphics[height=5em]{imperial}
+  \end{center}
+\end{minipage}
+\begin{minipage}{0.39\textwidth}
+  Imperial College London\\
+  \url{http://www.imperial.ac.uk/}
+\end{minipage}
+\bigskip
+
+\noindent
+\begin{minipage}{0.6\textwidth}
+  \begin{center}
+  \includegraphics[height=5em]{hipeds}
+  \end{center}
+\end{minipage}
+\begin{minipage}{0.39\textwidth}
+  HiPEDS: Imperial College London\\
+  \url{http://wp.doc.ic.ac.uk/hipeds/}
+\end{minipage}
+
+\bigskip
+\section*{Platinum Sponsor}
+\bigskip
+
+\noindent
+\begin{minipage}{0.6\textwidth}
+  \begin{center}
+  \includegraphics[height=5em]{google}
+  \end{center}
+\end{minipage}
+\begin{minipage}{0.39\textwidth}
+  Google Inc.\\
+  \url{http://www.google.com/}
+\end{minipage}
+
+
+% \begin{participants}
+% \chapter[Authors]{List of Authors}
+% %use \participant for every author, eg.:
+% \participant John Q. Public\\ 
+%   Dummy University Computing Laboratory\\
+%   Address, Country\\
+%   johnqpublic@dummyuni.org
+
+% \end{participants} 
+
+
+\end{document}
