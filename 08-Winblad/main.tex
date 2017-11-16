@@ -13,6 +13,7 @@
 \usepackage{color}
 \usepackage{amsmath}
 \usepackage{xspace} 
+\usepackage{adjustbox}
 \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
 \makeatletter
 \newcommand{\thickhline}{%
@@ -401,12 +402,16 @@ After the base nodes have been traversed, the collected immutable data can be tr
 %The t\emph{Im-Tr-CA} can perform so well on the scenarios with large range queries is that its range queries spend a short time reading shared mutable data compared to the other data structures.
 
  \begin{table}[h]%\footnotesize  
-  \caption{Statistics for \emph{Im-Tr-CA} in the scenarios displayed in \figurename~\ref{fig:rangeseprange} and \figurename~\ref{fig:rangesepput}.\label{tab:nodestats}}
+  
+   \caption{Statistics for \emph{Im-Tr-CA} in the scenarios displayed in \figurename~\ref{fig:rangeseprange} and \figurename~\ref{fig:rangesepput}.}
+   \label{tab:nodestats}
+   \begin{adjustbox}{max width=\textwidth}
       \begin{tabular}{c|cccccccccc} %%\hline
       Range Size  & 2 & 4 & 8 & 32 & 128 & 512 & 2K & 8K & 32K & 128K \\\hline
       \# base nodes & 2.5K & 2.1K & 1.7K & 1.0K & 590 & 390 & 310 & 310 & 390 & 430 \\ 
       $\frac{\text{\# traversed base nodes}}{\text{\# range queries}}$ & 1.0 & 1.0 & 1.0 & 1.0 & 1.1 & 1.2 & 1.6 & 3.5 & 13 & 56 \\ %%\hline
     \end{tabular}
+  \end{adjustbox}
 \end{table} 
 %% In \figurename~\ref{fig:rangeseprange} and \figurename~\ref{fig:rangesepput} that shows varying range sizes, Im-Tr-CA is able to increase the number of items processed per time unit up to very large range queries.
 %% This may seem surprising at first.
