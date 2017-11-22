@@ -17,17 +17,16 @@
 \usepackage[font+=scriptsize]{subcaption}
 \usepackage[margin=10pt,font=small]{caption}
 \usepackage{mwe}
-\usepackage{pgfplots}
-\usepackage{tikz}
+
 \usepackage{hyperref}% http://ctan.org/pkg/hyperref
 \usepackage{filecontents}
 \usepackage{epstopdf}
-\hypersetup{
-	colorlinks,
-	linkcolor={red!50!black},
-	citecolor={blue!50!black},
-	urlcolor={blue!80!black}
-}
+% \hypersetup{
+% 	colorlinks,
+% 	linkcolor={red!50!black},
+% 	citecolor={blue!50!black},
+% 	urlcolor={blue!80!black}
+% }
 
 
 \definecolor{bblue}{HTML}{4F81BD}
@@ -408,13 +407,15 @@ Note that the latency is defined here as $t_{1}-t_{0}$ where $t_{0}$ is the time
 In this experiment, we deployed Zab and ZabAC in a three-server ensemble since ZabAC works only when $N=3$. Figure \ref{LatencyAC3} shows the latency in milliseconds (ms) of the mixed workload (the ratio of writes to reads) as the percentage of writes was increased. The figure shows that increasing the number of writes has a negative impact on the performance of Zab and ZabAC. The reason the performance is affected is because write requests must go through atomic broadcast, which requires additional processing and adds more latency to requests whereas read requests require the server to only read data from the local replica's state.
 
  \begin{figure}
-	\begin{subfigure}{.5\linewidth}
-		\includegraphics[width=180pt,height=140pt, scale=0.39]{figuress/LN3_AC.eps}
+    \centering
+	\captionsetup[subfigure]{justification=centering}
+	\begin{subfigure}{.49\linewidth}
+		\includegraphics[width=\textwidth]{figuress/LN3_AC-eps-converted-to.pdf}
 		\caption{Latency comparison}
 		\label{LatencyAC3}
 	\end{subfigure}		
-	\begin{subfigure}{.5\linewidth}
-		\includegraphics[width=180pt,height=140pt, scale=0.39]{figuress/TN3_AC.eps}
+	\begin{subfigure}{.49\linewidth}
+		\includegraphics[width=\textwidth]{figuress/TN3_AC-eps-converted-to.pdf}
 		\caption{Throughput comparison}
 		\label{ThroughpuAC3}
 	\end{subfigure}		
@@ -501,18 +502,21 @@ Further investigation needs to be accomplished. We plan to evaluate ZabAA using 
 \appendix
 
 \section{Source Code}
-The source code for the evaluated protocols and the benchmarks are publicly available at https://github.com/ibrahimshbat/JGroups.
+The source code for the evaluated protocols and the benchmarks are publicly available at \url{https://github.com/ibrahimshbat/JGroups}.
 
 \section{Performance Compression for Zab and ZabAA}
 
 \begin{figure*}[h]
-	\begin{subfigure}{.5\linewidth}
-		\includegraphics[width=170pt,height=140pt, scale=0.39]{figuress/LN3_AA.eps}
+\centering
+\captionsetup[subfigure]{justification=centering}
+	\begin{subfigure}{.49\textwidth}
+		\includegraphics[width=\textwidth]{figuress/LN3_AA-eps-converted-to.pdf}
 		\caption{Ensemble size $N=3$}
 		\label{LatencyAAN3}
 	\end{subfigure}		
-	\begin{subfigure}{.5\linewidth}
-		\includegraphics[width=170pt,height=140pt, scale=0.39]{figuress/LN5_AA.eps}
+	\begin{subfigure}{.49\textwidth}
+	\centering
+		\includegraphics[width=\textwidth]{figuress/LN5_AA-eps-converted-to.pdf}
 		\caption{Ensemble size $N=5$}
 		\label{LatencyAAN5}
 	\end{subfigure}		
@@ -522,13 +526,15 @@ The source code for the evaluated protocols and the benchmarks are publicly avai
 
 
 \begin{figure*}[h]
-	\begin{subfigure}{.5\linewidth}
-		\includegraphics[width=170pt,height=140pt, scale=0.39]{figuress/TN3_AA.eps}
+\centering
+\captionsetup[subfigure]{justification=centering}
+	\begin{subfigure}{.49\textwidth}
+		\includegraphics[width=\textwidth]{figuress/TN3_AA-eps-converted-to.pdf}
 		\caption{Ensemble size $N=3$}
 		\label{ThroughputAAN3}
 	\end{subfigure}		
-	\begin{subfigure}{.5\linewidth}
-		\includegraphics[width=170pt,height=140pt, scale=0.39]{figuress/TN5_AA.eps}
+	\begin{subfigure}{.49\textwidth}
+		\includegraphics[width=\textwidth]{figuress/TN5_AA-eps-converted-to.pdf}
 		\caption{Ensemble size $N=5$}
 		\label{ThroughputAAN5}
 	\end{subfigure}		
