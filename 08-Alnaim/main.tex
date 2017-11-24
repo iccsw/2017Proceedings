@@ -1,0 +1,68 @@
+\documentclass[a4paper,UKenglish]{oasics-v2016}
+%This is a template for producing OASIcs articles. 
+%See oasics-v2016-manual.pdf for further information.
+%for A4 paper format use option "a4paper", for US-letter use option "letterpaper"
+%for british hyphenation rules use option "UKenglish", for american hyphenation rules use option "USenglish"
+% for section-numbered lemmas etc., use "numberwithinsect"
+ 
+\usepackage{microtype}%if unwanted, comment out or use option "draft"
+
+%\graphicspath{{./graphics/}}%helpful if your graphic files are in another directory
+
+\bibliographystyle{plainurl}% the recommended bibstyle
+
+% Author macros::begin %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{Gesture Recognition and Classification using Intelligent Systems}
+
+
+%% Please provide for each author the \author and \affil macro, even when authors have the same affiliation, i.e. for each author there needs to be the  \author and \affil macros
+\author[1]{Norah Alnaim}
+\author[2]{Maysam Abbod}
+\affil[1,2]{
+	Department of Electronic and Computer Engineering\\
+	Brunel University London\\
+	Uxbridge UB8 3PH\\
+	UK
+}
+\affil[1]{\texttt{Norah.alnaim@brunel.ac.uk}}
+\affil[2]{\texttt{Maysam.abbod@brunel.ac.uk}}
+
+
+%\authorrunning{J.\,Q. Open and J.\,R. Access} %mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus 'et. al.'
+
+%\Copyright{John Q. Open and Joan R. Access}%mandatory, please use full first names. OASIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
+
+\subjclass{H.5.2 User Interfaces, I.2.6 Learning}% mandatory: Please choose ACM 1998 classifications from http://www.acm.org/about/class/ccs98-html . E.g., cite as "F.1.1 Models of Computation". 
+\keywords{Wavelets, Empirical Model Decomposition, Artificial Neural Network, Gesture Recognition, HCI.}% mandatory: Please provide 1-5
+
+%Editor-only macros:: begin (do not touch as author)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\EventEditors{Fergus Leahy and Juliana Franco}
+\EventNoEds{2}
+\EventLongTitle{2017 Imperial College Computing Student Workshop (ICCSW 2017)}
+\EventShortTitle{ICCSW 2017}
+\EventAcronym{ICCSW}
+\EventYear{2017}
+\EventDate{September 26—-27, 2017}
+\EventLocation{London, UK}
+\EventLogo{../graphics/iccsw17}
+\SeriesVolume{60}
+\ArticleNo{08}
+% Editor-only macros::end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+	Gesture Recognition is defined as non-verbal human motions used as a method of communication in HCI interfaces. In a virtual reality system, gestures can be used to navigate, control, or interact with a computer. Having a person make gestures formed in specific ways to be detected by a device, like a camera, is the foundation of gesture recognition. Finger tracking is an interesting principle which deals with three primary parts of computer vision: segmentation of the finger, detection of finger parts, and tracking of the finger. Fingers are most commonly used in varying gesture recognition systems. 
+	
+	Finger gestures can be detected using any type of camera; keeping in mind that different cameras will yield different resolution qualities. 2-dimensional cameras exhibit the ability to detect most finger motions in a constant surface called 2-D. While the image processes, the system prepares to receive the whole image so that it may be tracked using image processing tools. Artificial intelligence releases many classifiers, each one with the ability to classify data, that rely on its configuration and capabilities. In this work, the aim is to develop a system for finger motion acquisition in 2-D using feature extraction algorithms such as Wavelets transform (WL) and Empirical Mode Decomposition (EMD) plus Artificial Neural Network (ANN) classifier.
+	
+	WL is an image processing algorithm that performs signal analysis with one signal frequency differing at the end of time. EMD is an innovative technology used in both non-stationary and non-linear data. The primary function of this method is decomposing a signal into Intrinsic Mode Functions consistently through the domain. For classification, ANN is used which is defined as a system that processes information and has structure much like that of the biological nervous system. What is most unique is that this system inhibits an abstract but familiar structure as an information processing system. 
+	
+	In this work, three different finger motions are recorded using an iPhone 6s Plus camera. The gesture classification system is developed for three types of finger gesture recognition. WL and EMD algorithms are used to extract features which are fed to ANN for gesture classification. The classification results of training, validation, and testing mean square error using WL are 5.1312E-4/0.01245/0.0079 respectively, while the classification mean square error using EMD are 1.1035E-11/9.676E-09/2.5616E-9 respectively. Feature extraction execution time, in seconds, for Wavelet Transform is 131 and EMD is 7200. The classification accuracy for training, validation, and testing using WT are 0.9984/0.9909/0.9953 and using EMD are 1.0/1.0/1.0. The results of this experiment clearly identify EMD being a suitable method to extract features from the image but it is time consuming.
+	
+\end{abstract}
+
+
+\end{document}

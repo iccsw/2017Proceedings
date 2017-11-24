@@ -1,0 +1,75 @@
+\documentclass[a4paper,UKenglish]{oasics-v2016}
+%This is a template for producing OASIcs articles.
+%See oasics-manual.pdf for further information.
+%for A4 paper format use option "a4paper", for US-letter use option "letterpaper"
+%for british hyphenation rules use option "UKenglish", for american hyphenation rules use option "USenglish"
+
+\usepackage{microtype}%if unwanted, comment out or use option "draft"
+
+%\graphicspath{{./graphics/}}%helpful if your graphic files are in another directory
+
+\bibliographystyle{plain}% the recommended bibstyle
+
+% Author macros::begin %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{Demand for Medical Care by the Elderly: A Nonparametric Variational Bayesian Mixture	Approach}
+\titlerunning{Demand for Medical Care by the Elderly: A Nonparametric Variational Bayesian Mixture	Approach} %optional, in case that the title is too long; the running title should fit into the top page column
+
+\author[1]{Christoph F. Kurz}
+\author[1]{Rolf Holle}
+\affil[1]{Helmholtz Zentrum M\"unchen,\\
+  Institute of Health Economics and Health Care Management, Neuherberg, Germany\\
+  \texttt{christoph.kurz@helmholtz-muenchen.de}}
+%\affil[2]{Department of Informatics, Dummy College\\
+%  Address, Country\\
+%  \texttt{access@dummycollege.org}}
+\authorrunning{C.F. Kurz}%mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus 'et. al.'
+
+\Copyright{John Q. Open and Joan R. Access}%mandatory. OASIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
+
+\subjclass{G.3 Probability and Statistics}% mandatory: Please choose ACM 1998 classifications from http://www.acm.org/about/class/ccs98-html . E.g., cite as "F.1.1 Models of Computation". 
+\keywords{machine learning, health care utilization, Bayesian statistics}% mandatory: Please provide 1-5 keywords
+% Author macros::end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Editor-only macros:: begin (do not touch as author)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\EventEditors{Fergus Leahy and Juliana Franco}
+\EventNoEds{2}
+\EventLongTitle{2017 Imperial College Computing Student Workshop (ICCSW 2017)}
+\EventShortTitle{ICCSW 2017}
+\EventAcronym{ICCSW}
+\EventYear{2017}
+\EventDate{September 26—-27, 2017}
+\EventLocation{London, UK}
+\EventLogo{../graphics/iccsw17}
+\SeriesVolume{60}
+\ArticleNo{04}
+% \DOI{10.4230/OASIcs.xxx.yyy.p}% to be completed by the volume editor
+% Editor-only macros::end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Page numbers in side margins
+\usepackage[some]{background}
+\usepackage{ifthen}
+\SetBgContents{\textcolor{gray}{\LARGE \bf \hl \thepage}}
+\SetBgOpacity{1}
+\SetBgScale{1}
+\SetBgAngle{0}
+\SetBgColor{black}
+\makeatletter
+  \AddEverypageHook{%
+    \ifthenelse{\isodd{\thepage}}%
+      {\SetBgPosition{.9\paperwidth,-.9\paperheight}%
+	  \thispagestyle{empty}%
+	}%
+      {\SetBgPosition{.1\paperwidth,-.9\paperheight}%
+	  \thispagestyle{empty}%
+	}%
+    \bg@material}
+\makeatother
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Outpatient care is a large share of total health care spending, making analysis of data on outpatient utilization an important part of understanding patterns and drivers of health care spending growth. Common features of outpatient utilization measures include zero-inflation, over-dispersion, and skewness, all of which complicate statistical modeling. Mixture modeling is a popular approach because it can accommodate these features of health care utilization data. In this work, we add a nonparametric clustering component to such models. Our fully Bayesian model framework allows for an unknown number of mixing components, so that the data, rather than the researcher, determine the number of mixture components. We apply the modeling framework to data on visits to physicians by elderly individuals and show that each subgroup has different characteristics that allow easy interpretation and new insights.
+\end{abstract}
+\end{document}

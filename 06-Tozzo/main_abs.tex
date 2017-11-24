@@ -1,0 +1,113 @@
+\documentclass[a4paper,UKenglish]{oasics-v2016}
+
+\usepackage{microtype}%if unwanted, comment out or use option "draft"
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{algorithm}
+\usepackage{hyperref}
+\usepackage[noend]{algpseudocode}
+\usepackage{todonotes}
+\usepackage{bbm}
+
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+   % basicstyle=\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\newcommand{\argmin}{\operatornamewithlimits{argmin}}
+
+
+\graphicspath{{./images/}}
+
+\bibliographystyle{plain}
+
+% Author macros::begin %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{Hey there's DALILA: a DictionAry LearnIng LibrAry}
+\titlerunning{DALILA: A DictionAry LearnIng LibrAry}
+
+\author[1]{Veronica Tozzo}
+\author[1]{Vanessa D'Amario}
+\author[1]{Annalisa Barla}
+\affil[1]{Department of Informatics, Bioengineering, Robotics and System Engineering
+(DIBRIS), University of Genoa\\ Genoa, I-16146, Italy\\
+\href{mailto:\{veronica.tozzo, vanessa.damario\}@dibris.unige.it}{\{veronica.tozzo, vanessa.damario\}@dibris.unige.it} \\
+\href{mailto:annalisa.barlao@unige.it}{annalisa.barla@unige.it}}
+\authorrunning{V. Tozzo, V. D'Amario and A. Barla}%mandatory.
+
+\Copyright{Veronica Tozzo and Vanessa D'Amario}%mandatory. OASIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
+
+\subjclass{G.1.6 Optimization, D.1.3 Concurrent Programming, D.2.2 Design Tools and Techniques}  %please refer to \url{http://www.acm.org/about/class/ccs98-html}}% mandatory: Please choose ACM 1998 classifications from http://www.acm.org/about/class/ccs98-html . E.g., cite as "F.1.1 Models of Computation".
+\keywords{Machine learning, dictionary learning, representation learning, alternating proximal gradient descent, parallel computing}% mandatory: Please provide 1-5 keywords
+% Author macros::end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Editor-only macros:: begin (do not touch as author)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\EventEditors{Fergus Leahy and Juliana Franco}
+\EventNoEds{2}
+\EventLongTitle{2017 Imperial College Computing Student Workshop (ICCSW 2017)}
+\EventShortTitle{ICCSW 2017}
+\EventAcronym{ICCSW}
+\EventYear{2017}
+\EventDate{September 26—-27, 2017}
+\EventLocation{London, UK}
+\EventLogo{../graphics/iccsw17}
+\SeriesVolume{60}
+\ArticleNo{06}
+% \DOI{10.4230/OASIcs.xxx.yyy.p}% to be completed by the volume editor
+% Editor-only macros::end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Page numbers in side margins
+\usepackage[some]{background}
+\usepackage{ifthen}
+\SetBgContents{\textcolor{gray}{\LARGE \bf \hl \thepage}}
+\SetBgOpacity{1}
+\SetBgScale{1}
+\SetBgAngle{0}
+\SetBgColor{black}
+\makeatletter
+  \AddEverypageHook{%
+    \ifthenelse{\isodd{\thepage}}%
+      {\SetBgPosition{.9\paperwidth,-.9\paperheight}%
+	  \thispagestyle{empty}%
+	}%
+      {\SetBgPosition{.1\paperwidth,-.9\paperheight}%
+	  \thispagestyle{empty}%
+	}%
+    \bg@material}
+\makeatother
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Dictionary Learning and Representation Learning are machine learning methods for decomposition, denoising and reconstruction of data with a wide range of applications such as text recognition, image processing and biological processes understanding. In this work we present DALILA, a scientific Python library for regularised dictionary learning and regularised representation learning that allows to impose prior knowledge, if available.
+DALILA, differently from the others available libraries for this purpose, is flexible and  modular. DALILA is  designed to be easily extended for custom needs. Moreover, it is compliant with the most widespread ML Python library and this allows for a straightforward usage and integration.
+We here present and discuss the theoretical aspects and discuss its strength points and
+implementation.
+%The library is implemented in Python and it is publicly available for download at github link \texttt{https://github.com/slipguru/dalila} or via pip and conda install. The library is presented with example and documentation.
+\end{abstract}
+\end{document}

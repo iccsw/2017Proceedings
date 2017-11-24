@@ -1,0 +1,125 @@
+\documentclass[a4paper,UKenglish]{oasics-v2016}
+%This is a template for producing OASIcs articles. 
+%See oasics-v2016-manual.pdf for further information.
+%for A4 paper format use option "a4paper", for US-letter use option "letterpaper"
+%for british hyphenation rules use option "UKenglish", for american hyphenation rules use option "USenglish"
+% for section-numbered lemmas etc., use "numberwithinsect"
+ 
+\usepackage{microtype}%if unwanted, comment out or use option "draft"
+\usepackage[numbers,sort]{natbib}
+\usepackage{filecontents}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{color, colortbl, xcolor}
+\usepackage{algorithm,algpseudocode}
+\usepackage{amsmath}
+\usepackage{pifont}
+\usepackage[font+=scriptsize]{subcaption}
+\usepackage[margin=10pt,font=small]{caption}
+\usepackage{mwe}
+
+\usepackage{hyperref}% http://ctan.org/pkg/hyperref
+\usepackage{filecontents}
+\usepackage{epstopdf}
+% \hypersetup{
+% 	colorlinks,
+% 	linkcolor={red!50!black},
+% 	citecolor={blue!50!black},
+% 	urlcolor={blue!80!black}
+% }
+
+
+\definecolor{bblue}{HTML}{4F81BD}
+\definecolor{rred}{HTML}{C0504D}
+\definecolor{ggreen}{HTML}{9BBB59}
+\definecolor{ppurple}{HTML}{9F4C7C}
+\definecolor{oorange}{HTML}{FFA500}
+
+%\graphicspath{{./graphics/}}%helpful if your graphic files are in another directory
+
+\bibliographystyle{plainurl}% the recommended bibstyle
+
+% Author macros::begin %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{Improving the Latency and Throughput of ZooKeeper Atomic Broadcast}
+\titlerunning{Improving the Latency and Throughput of ZooKeeper Atomic Broadcast} %optional, in case that the title is too long; the running title should fit into the top page column
+
+%% Please provide for each author the \author and \affil macro, even when authors have the same affiliation, i.e. for each author there needs to be the  \author and \affil macros
+\author[1,2]{Ibrahim EL-Sanosi}
+\author[2]{Paul Ezhilchelvan}
+
+\affil[1]{Faculty of Information Technology, Sebha University, Sebha, Libya\\
+	\texttt{i.elsanosi@sebhau.edu.ly}} 
+\authorrunning{I. EL-Sanosi and P. Ezhilchelvan}
+\affil[2]{School of Computing, Newcastle University, Newcastle Upon Tyne, UK\\
+  \texttt{\{i.s.el-sanosi,paul.ezhilchelvan\}}@ncl.ac.uk}
+
+
+
+%School of Computing Science, Newcastle University, Newcastle Upon Tyne, UK,  \email{\{i.s.el-sanosi,paul.ezhilchelvan\}}@ncl.ac.uk}
+
+
+ %mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus 'et. al.'
+
+\Copyright{Ibrahim EL-Sanosi and Paul Ezhilchelvan}%mandatory, please use full first names. OASIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
+\subjclass{D.2.8 Performance measures, D.4.7 Distributed systems}
+%\subjclass{} %Dummy classification -- please refer to \url{http://www.acm.org/about/class/ccs98-html}}% mandatory: Please choose ACM 1998 classifications from http://www.acm.org/about/class/ccs98-html . E.g., cite as "F.1.1 Models of Computation". 
+\keywords{% mandatory: Please provide 1-5 keywords
+% Author macros::end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Atomic Broadcast, 
+Server Replication, 
+Protocol Latency,
+Throughput
+}
+%Editor-only macros:: begin (do not touch as author)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\EventEditors{Fergus Leahy and Juliana Franco}
+\EventNoEds{2}
+\EventLongTitle{2017 Imperial College Computing Student Workshop (ICCSW 2017)}
+\EventShortTitle{ICCSW 2017}
+\EventAcronym{ICCSW}
+\EventYear{2017}
+\EventDate{September 26—-27, 2017}
+\EventLocation{London, UK}
+\EventLogo{../graphics/iccsw17}
+\SeriesVolume{60}
+\ArticleNo{03}
+% Editor-only macros::end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Page numbers in side margins
+\usepackage[some]{background}
+\usepackage{ifthen}
+\SetBgContents{\textcolor{gray}{\LARGE \bf \hl \thepage}}
+\SetBgOpacity{1}
+\SetBgScale{1}
+\SetBgAngle{0}
+\SetBgColor{black}
+\makeatletter
+  \AddEverypageHook{%
+    \ifthenelse{\isodd{\thepage}}%
+      {\SetBgPosition{.9\paperwidth,-.9\paperheight}%
+	  \thispagestyle{empty}%
+	}%
+      {\SetBgPosition{.1\paperwidth,-.9\paperheight}%
+	  \thispagestyle{empty}%
+	}%
+    \bg@material}
+\makeatother
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+	ZooKeeper is a crash-tolerant system that offers fundamental services to 
+Internet-scale applications, thereby reducing the development and hosting of the latter.
+It consists of $N\geq3$ servers that form a replicated state machine. 
+Maintaining these replicas in a mutually consistent state requires executing 
+an Atomic Broadcast Protocol,
+\emph{Zab}, so that concurrent requests for state changes 
+are serialised identically at all replicas before being acted upon.
+Thus, ZooKeeper performance for update operations is determined by Zab performance.
+We contribute by presenting two easy-to-implement Zab variants, called \emph{ZabAC} and \emph{ZabAA}. 
+They are designed to offer small atomic-broadcast latencies and to reduce the processing load on the 
+primary node that plays a leading role in Zab. The former improves ZooKeeper performance and the latter enables ZooKeeper
+to face more challenging load conditions. 
+ \end{abstract}
+\end{document}

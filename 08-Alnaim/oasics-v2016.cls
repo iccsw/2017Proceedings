@@ -1,0 +1,1 @@
+../oasics/oasics-v2016.cls

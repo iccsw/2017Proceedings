@@ -2,7 +2,7 @@ DIR_FRONT = 00-Frontmatter/
 DIR_FRONT_ABS = 00-Frontmatter-Abs/
 
 #~ find . -maxdepth 2 -iname 'main.tex' -exec dirname \{} \; | sort | tail -n +2 | cut -b3-
-DIRS = $(addsuffix /,01-Jones 02-Swirski 03-Cauli 04-El-Sanosi 05-Kurz 06-Stamford 07-Tozzo 08-Winblad 09-Alnaim 10-Capuccini)
+DIRS = $(addsuffix /,01-Jones 02-Swirski 03-El-Sanosi 04-Kurz 05-Stamford 06-Tozzo 07-Winblad 08-Alnaim 09-Capuccini)
 
 # Requires `main.tex` in all directories
 FRONT = $(addsuffix main.pdf, $(DIR_FRONT))

@@ -1,0 +1,612 @@
+\documentclass[a4paper,UKenglish]{oasics-v2016}
+%This is a template for producing OASIcs articles.
+%See oasics-manual.pdf for further information.
+%for A4 paper format use option "a4paper", for US-letter use option "letterpaper"
+%for british hyphenation rules use option "UKenglish", for american hyphenation rules use option "USenglish"
+ 
+\usepackage{microtype}%if unwanted, comment out or use option "draft"
+\usepackage{multirow}
+%\usepackage{subfig} Conflicts with the class use of subcaption
+\usepackage{subcaption}
+\usepackage{wrapfig}
+\usepackage{pifont} 
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{xspace} 
+\usepackage{adjustbox}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\makeatletter
+\newcommand{\thickhline}{%
+    \noalign {\ifnum 0=`}\fi \hrule height 1pt
+    \futurelet \reserved@a \@xhline
+}
+\newcolumntype{"}{@{\hskip\tabcolsep\vrule width 1pt\hskip\tabcolsep}}
+\makeatother 
+\newcommand{\cmark}{{\color{DarkGreen}\ding{51}}}
+\newcommand{\xmark}{{\color{red}\ding{55}}} 
+\newcommand{\etal}{\mbox{\textit{et al.}}\xspace}
+\newcommand{\kary}{\mbox{$k$-ary}\xspace}
+%\graphicspath{{./graphics/}}%helpful if your graphic files are in another directory
+
+\bibliographystyle{plain}% the recommended bibstyle
+
+% Author macros::begin %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Faster Concurrent Range Queries with Contention Adapting Search Trees Using Immutable Data Structures
+%Faster Concurrent Range Queries Through Dynamic Adaptions of Immutable Parts
+\title{Faster Concurrent Range Queries with Contention Adapting Search Trees Using Immutable Data}%\footnote{This work was partially supported by someone.}
+\titlerunning{Faster Concurrent Range Queries in CA Trees Using Immutable Data Structures} %optional, in case that the title is too long; the running title should fit into the top page column
+
+\author[1]{Kjell Winblad}
+%\author[2]{Joan R. Access}
+\affil[1]{Department of Information Technology, Uppsala University, Sweden\\
+  \texttt{kjell.winblad@it.uu.se}}
+%\affil[2]{Department of Informatics, Dummy College\\
+%  Address, Country\\
+%  \texttt{access@dummycollege.org}}
+\authorrunning{K. Winblad}%mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus 'et. al.'
+
+\Copyright{Kjell Winblad}%mandatory. OASIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
+
+\subjclass{D.2.8 Performance measures, E.1 Trees, H.2.4 Concurrency}%E.1 Trees, F.1.2 Parallelism and concurrency   \url{http://www.acm.org/about/class/ccs98-html} mandatory: Please choose ACM 1998 classifications from http://www.acm.org/about/class/ccs98-html . E.g., cite as "F.1.1 Models of Computation". 
+\keywords{linearizability, concurrent data structures, treap}% mandatory: Please provide 1-5 keywords
+% Author macros::end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Editor-only macros:: begin (do not touch as author)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\EventEditors{Fergus Leahy and Juliana Franco}
+\EventNoEds{2}
+\EventLongTitle{2017 Imperial College Computing Student Workshop (ICCSW 2017)}
+\EventShortTitle{ICCSW 2017}
+\EventAcronym{ICCSW}
+\EventYear{2017}
+\EventDate{September 26—-27, 2017}
+\EventLocation{London, UK}
+\EventLogo{../graphics/iccsw17}
+\SeriesVolume{60}
+\ArticleNo{07}
+% Editor-only macros::end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+ 
+\maketitle
+
+
+
+\begin{abstract}
+  %% The need for scalable concurrent ordered set data structures with linearizable range query support is increasing due to the rise of multicore computers, big data processing platforms and in-memory databases.
+  %% This paper presents a new concurrent ordered set with linearizable range query support which is based on the contention adapting search tree and an immutable data structure.
+  %% Experimental results show that the new data structure can provide as much as three times higher throughput of operations compared to related data structures due to its ability to adapt the size of its immutable parts to the contention level and to the size of the range queries.
+  % with linearizable range query support
+  The need for scalable concurrent ordered set data structures with linearizable range query support is increasing due to the rise of multicore computers, data processing platforms and in-memory databases.
+  This paper presents a new concurrent ordered set with linearizable range query support.
+  The new data structure is based on the contention adapting search tree and an immutable data structure.
+  Experimental results show that the new data structure is as much as three times faster compared to related data structures.
+  The data structure scales well due to its ability to adapt the sizes of its immutable parts to the contention level and the sizes of the range queries.
+\end{abstract} 
+
+\section{Introduction\label{sec:intro}}
+The use of concurrent ordered set data structures\footnote{A concurrent ordered set data structure represents a set of items that can be manipulated concurrently by several threads and where an item consists of an ordered key and optionally some additional data.} with support for linearizable\footnote{A linearizable operation appears to happen instantly between the operation's invocation and return~\cite{HerlihyLinearizability}.} range queries\footnote{A range query operation returns all items with keys within the given range (specified by two keys).} is increasing as multicores are becoming more readily available and due to the rise of big scale data processing platforms and in-memory databases such as Google's F1~\cite{ShuteF1} and Yahoo's Flurry~\cite{Furry}.
+Both of these require set data structures with fast updates\footnote{An update operation is an insert operation or a remove operation where the former inserts an item (replacing an existing item if one with an equal key already exists) and the latter removes an item with the given key if such an item exists.} to store incoming data while concurrently serving (typically large) linearizable range queries for analytics~\cite{BasinKiWi}. %~\cite{herlihy2012art}
+%A range query is an operation on an ordered set data structure that returns all items from the data structure with keys in the given range (specified by two keys).
+%The linearizability of range queries is needed for the correctness of the analytics.
+Although there are many concurrent set data structures (e.g.~\cite{shalevExtendableLockFreeHash, michaelHashTable, ProkopecCtrie}) and ordered set data structures (e.g.~\cite{fraser2004practical,NatarajanFastLockFree,NBKASearchTree}), there are only a few concurrent data structures with efficient linearizable range queries~\cite{RangeQKArySeachTree,AvniLeaplist,CFRangeQueries,CATreeLCPC,ChatterjeeLFRangeQueries,BasinKiWi}.
+%Furthermore efficent concurrent ordered sets with linearizable range queries has the potential to speed up in-memory databases and key-value stores that probably will get more popular due to the dropping prices for main memory.
+
+This paper proposes a new concurrent ordered set data structure that internally makes use of an immutable data structure. %~\cite{okasaki1999purely}
+The difference between an immutable data structure and its mutable counterpart is that the immutable data structure's update operations do not modify the given data structure instance in-place but instead return a new version, leaving the input instance intact. %(persistent)
+For many data structures, e.g. binary search trees, the operations of the immutable version are asymptotically as efficient as in its mutable counterpart~\cite{okasaki1999purely}.
+As an example, the insert operation of an immutable balanced binary search tree only needs to make a copy of the nodes on the path to the inserted node, which only consists of $\mathcal{O}(\log{}n)$ nodes, where $n$ is the number of items that are stored in the search tree. 
+
+One can derive a concurrent ordered set data structure with linearizable range query support from a single mutable reference to an immutable data structure~\cite{HerlihyUniMethod}.
+A lookup or a range query simply performs the operation in the referenced immutable data structure. %(that returns an item with the given key if such an item exists) 
+An update operation repeatedly tries to update the reference using an atomic compare-and-swap operation~\cite{HerlihyUniMethod} until the update succeeds.
+Unfortunately, this coarse-grained approach does not scale when concurrent updates are common due to the scalability bottleneck that exists in the updating of the shared reference.
+Instead, several data structures~\cite{RangeQKArySeachTree,AvniLeaplist} use immutable parts that can store a fixed number of items to shorten the time range queries need to spend reading shared mutable data.
+This fine-grained approach can be efficient when it is possible to fine-tune the size of the data structure's immutable parts to fit the sizes of the range queries (the number of items within the range) and the contention level.
+However, the fine-grained approach does not work well when the access pattern is unknown or differs in different parts of the data structure.
+
+The \emph{main contribution} of this paper is a new concurrent ordered set data structure with linearizable range query support that solves the problems with the coarse-grained and fine-grained approaches described above by dynamically changing the sizes of its immutable parts to fit the workload at hand.
+The new data structure is based on the contention adapting search tree (CA tree)~\cite{CATreeISPDC, CATreeLCPC, JPDCCAtree} and an immutable data structure.
+Previous results~\cite{CATreeLCPC} show that CA trees using mutable data structures provide good scalability in scenarios with short range queries.
+However, previous CA~tree variants' scalability for large range queries is limited as their range queries lock out other threads from large portions of the data structure for a time period whose length is proportional to the number of items with keys in the given range. % in the worst case.
+The new CA tree variant eliminates this problem by utilizing an immutable data structure.
+As is shown in this work, the new CA tree variant's ability to reduce the lock holding times does not only make its scalability substantially better compared to the old CA tree variants but also much better than the other recently proposed data structures with linearizable range query support.
+%The experimental comparison included in this paper is the first experimental comparison of the three most recent proposals for linearizable range queries~\cite{CATreeLCPC,ChatterjeeLFRangeQueries,BasinKiWi} that the author is aware of.
+%The second contribution of this paper is the experimental comparison which include the three most recent proposals for linearizable range queries that the author is aware of~\cite{CATreeLCPC,ChatterjeeLFRangeQueries,BasinKiWi}.
+%This is the first such comparison as far as the author is aware. %(probably because all these contributions came out during a short period of time).
+
+%A \emph{linearizable operation} is an operation on a data structure with support for concurrent operations that appear to happen instantly at some point between the invocation and return of the operation~\cite{HerlihyLinearizability}.
+%% \emph{Concurrent set data structures} are data structures representing sets of items and that support linearizable update operations (\emph{insert} and \emph{remove}) as well as linearizable \emph{lookup} operations.
+%% An \emph{item} consists of a key and optionally some additional data.
+%% Two items are considered to be equal if they have the same key.
+%% %For simplicity, the term item will be used for both key and item from here on.
+%% A concurrent set data structure's insert operation inserts a new item into the set represented by the data structure (replacing an old item if an equal item already exists).
+%% The remove operation removes an item with the given key if such an item exists.
+%% Finally, the lookup operation returns an item with the given key if such an item exists.
+%% A \emph{concurrent ordered set data structure} is a concurrent set data structure with the additional requirement that the keys of the items must be ordered.
+
+
+This paper starts with a high-level description of CA trees (Section~\ref{sec:catreedesc}).
+The new CA tree variant and its implementation are described in Sections~\ref{immopt} and~\ref{immoptimpl}.
+Analytical and experimental comparisons with related data structures are given in Sections~\ref{sec:related} and~\ref{sec:eval}.
+The paper finishes with a conclusion (Section~\ref{sec:conc}). 
+
+
+
+\section{High-Level Description of Contention Adapting Search Trees\label{sec:catreedesc}}
+%-------------------------------------------------------------------
+%\newcommand{\wrapfigtopfix}{\vspace{-1em}}
+\begin{wrapfigure}[14]{r}{.345\textwidth}
+%\begin{figure}[t]
+  %\wrapfigtopfix
+  \centering
+  \includegraphics[width=.345\textwidth]{ca_tree3}
+  %\fixcaption
+  \caption{The structure of a CA tree. Numbers denote keys.} %, a valid node is marked with a \cmark; an invalid one with a \xmark.
+  \label{fig:ca_structure}
+  %\fixbelowcaption
+%\end{figure}
+\end{wrapfigure}
+%As CA trees have already been extensivly described~\cite{CATreeISPDC,CATreeLCPC}, we will here just provide a high level description.
+%The intrested reader is reffered to the earlier papers on CA tree  for a detailed desciption of the CA tree data stucture and its operations for basic set operations and range queries~\cite{} that includes pseudo-code as well as arguments for the correctness properies they provide: linearizability, deadlock freedom and livelock freedom.
+CA trees are structured as  depicted in Figure~\ref{fig:ca_structure}.
+The items that are stored in a CA tree are located in sequential data structures under the base nodes (see Figure~\ref{fig:ca_structure}).
+To efficiently find a specific item in a CA tree, the search is directed by the keys in the routing nodes.
+All items stored under the left branch of a routing node have keys that are less than the key of the routing node and all items stored under the right branch have keys that are greater than or equal to the key in the routing node.
+The sequential data structures are protected from concurrent accesses by locks in the base nodes.
+A base node lock has a statistics counter which is incremented when a thread needs to wait to acquire the lock and decremented when no waiting is required.
+If the statistics counter in a base node reaches a certain threshold, the items stored in the base node are split between two new base nodes to reduce the contention; see~\figurename~\ref{fig:initial} and \figurename~\ref{fig:split}.
+In the reverse direction, if the statistics counter in a base node reaches the threshold for low contention adaption, the items in the base node and a neighbor base node are joined into one new base node; see~\figurename~\ref{fig:initial} and \figurename~\ref{fig:join}.
+Base nodes also have a valid flag (depicted by \cmark~and \xmark) which is used to indicate if a base node is in the CA tree or if it has been removed.
+Operations that end up in an invalid (\xmark) base node need to retry the search until they end up in a valid (\cmark) base node.
+Routing nodes also have a valid flag and a lock that are only used rarely during the low contention optimizing join.
+Range queries are performed in CA trees by first finding and locking the base node containing the first key in the range and then traversing and locking subsequent base nodes until a base node containing a key which is equal to or greater than the largest key in the range is found.  
+
+%\subparagraph{Read optimization}
+An optimization that has been shown to greatly enhance performance of read operations (lookup and range query) is to let read operations optimistically attempt to do their operation without writing to shared memory~\cite{CATreeISPDC, CATreeLCPC}.
+This can be done by using a \emph{sequence lock}~\cite{lameter2005effective} as base node lock.
+A sequence lock has an operation to read a sequence number from the lock.
+If a thread gets the same even sequence number from two calls of this operation, then the sequence lock guarantees that the lock has not been acquired between the two calls.
+An optimistic attempt of a read operation first scans the sequence numbers and checks the valid flags of the base nodes that the operation needs to read data from, and then performs the operation, after which the sequence numbers from the locks have to be checked again to make sure that the sequence numbers match the previously read sequence numbers.
+If the optimistic attempt fails, the operation is done by acquiring the base node locks in read-mode (several read-mode lock holders can hold the lock at the same time).
+
+The reader is referred to the earlier papers on CA trees~\cite{CATreeISPDC,CATreeLCPC,JPDCCAtree} for a detailed description including pseudo-code and arguments that their operations provide linearizability, deadlock freedom, and livelock freedom.
+
+
+\begin{figure}[t]
+  \newcommand{\graphheight}{.17\textheight}
+  \newcommand{\bsp}{\hspace*{20pt}}
+  \centering
+  \begin{subfigure}[t]{3.2cm}
+    \centering
+    \includegraphics[height=\graphheight]{catree_split_join/inital_state}
+    \caption{Initial CA tree}\label{fig:initial}
+  \end{subfigure}\bsp
+  \begin{subfigure}[t]{3.5cm}
+    \centering
+    \includegraphics[height=\graphheight]{catree_split_join/state2b_split}
+    \caption{CA tree after a split}\label{fig:split}
+  \end{subfigure}\bsp
+  \begin{subfigure}[t]{3.5cm}
+    \centering
+    \includegraphics[height=\graphheight]{catree_split_join/state2a_join}
+    \caption{CA tree after a join}\label{fig:join}
+  \end{subfigure}
+  \caption{Effect of the split and join operations on the CA tree of \figurename~\ref{fig:initial}.}
+  \label{fig:split+join}
+\end{figure}
+
+
+\section{CA Tree Optimization Enabled by Immutable Data Structures\label{immopt}}
+%------------------------------------------------------------------
+%critical sections (the amount of time base node locks are held or the amount of time between the first and second sequence number scans)
+By using a mutable reference to an immutable data structure as a CA tree's sequential data structure,
+it is straightforward to reduce the amount of time that read operations spend on reading shared mutable data. % and thereby also reduce the risk of conflicts between threads operating on the data structure.
+Assuming that the CA tree's sequential data structure component is implemented with a mutable reference to an immutable data structure,
+a lookup or range query operation only needs to copy the values of the references that are needed by the operation while traversing shared mutable data. %in the base node(s) 
+The immutable data structures referenced by the copied references are then traversed after the base node locks have been unlocked (or after the second sequence number scan).
+%Thus, with this optimization, the amount of time that a read operation needs to spend on traversing the sequential data structures is moved out of the critical section.
+%CA trees without the described optimization need to spend time which is at least linear in the number of items in the range on reading shared mutable data while doing range queries.
+%The optimization can give a large reduction of the time spent on reading shared mutable data as  
+%Without the optimization, the time time that range queries need to spend on traversing shared mutable data is at least linear in the number of items in the range.
+%With the optimization, only a consta
+Especially for range queries, this optimization can give a large reduction of the amount of time which is spent on reading shared mutable data as the time that range queries need to spend on traversing the sequential data structures is at least linear in the number of items in the range.
+With the optimization, range queries may only need to traverse a few base nodes (one in the best case) while reading shared mutable data even when the number of items in the range is large. 
+
+It is straightforward to see that this optimization does not jeopardize correctness as the result of a read operation would be the same if the traversal of the sequential data structures happened instantly at the linearization point (due to the immutability of the data structures referenced by the copied references). %these linearization points are correct as it is impossible for any other thread to modify the references to the immutable data structures during the critical section and thus the operations will appear to happen atomically at their linearization point. 
+
+%pent for a range query in typical ordered set data structures (e.g. balanced search trees) is $\mathcal{O}(\log{}n + r)$ in the worst case, where $n$ is the number of items in the set and $r$ is the size of the range.
+%For the lookup operation, the potential reduction is not as large but still significant as this operation typically take $\mathcal{O}(\log{}n)$ time.
+
+%In the uncontended case (when no other operation interfere) and when one bound the number of routing nodes\footnote{We do not explicitly bound the number of routing nodes in our implementation but in practice the number of routing nodes will be bounded by amount of contention that can be triggered in the CA tree.} in the CA tree, the operations that use this optimization only spend a constant amount of time in the critical section.
+
+
+\section{The Implementation of the Optimized CA Tree\label{immoptimpl}}
+%---------------------------------------------------------------------
+%\subparagraph{Implementation Details}
+To experimentally evaluate the optimization described in the previous section, a CA tree using a mutable reference to an immutable treap~\cite{Seidel1996} as its sequential data structure has been implemented in Java.
+A treap is a self-balancing binary search tree with expected time complexity of $\mathcal{O}(\log{}n)$ for insert, remove and lookup and an expected time complexity of $\mathcal{O}(\log{}n +r)$ for range queries, where $n$ is the number of items stored in the data structure and $r$ is the number of items in the range.
+The treap also has efficient split and join operations~\cite{Seidel1996} which is important for the CA tree's low and high contention adaptions~\cite{CATreeISPDC}.
+To facilitate cache friendly range queries, the treap implementation stores all items in fat leaf nodes containing arrays that can store up to 64 items.
+%The main motivation for choosing the treap over other data structures with similar properties (e.g the AVL tree\cite{avl1962tree}) is its ease of implementation. 
+
+
+%As the amount of time that is spent holding locks in range queries is affected by the number of base nodes needed by the range query,
+One heuristic, that CA trees use to reduce the time that future similar range queries need to spend on traversing base nodes, is to decrement the contention statistics counters in the locks of base nodes needed by a range query, if more than one base node is needed; cf.~\cite{CATreeLCPC}.
+With the optimization described in the previous section in place, the portion of a range query that is spent on traversing shared mutable data is even more affected by the number of base nodes that the range query needs to access than without the optimization.
+The reason for this is that the optimization moves the traversal of the sequential data structures from within the period that is spent on reading shared mutable data to after this period. 
+It therefore makes sense to decrement the contention statistics counters with a larger value, when the optimization is used, as the potential benefit for similar range queries is larger than without the optimization.
+Indeed, experiments show that changing the heuristic to decrement by the value 100 instead of the value one (which is used by the old CA tree implementations) gives significantly better performance in scenarios with large range queries.
+Except for the change of the value used to decrement the statistics counters in the described heuristic, the immutable treap version of the CA tree has the same constants and thresholds for low and high contention adaptions as described in the previous work~\cite{CATreeLCPC}.
+
+%With the optimization descirbed in the previous section in place, the length of the critical sections of range queries mostly depend on the number of base nodes involved in the operations.
+%Thus, one heuristic to reduce the critical section of future similar range queries is to decrement the contention statistics counter in the locks of the base nodes  involved in range queries that need to access more than one base node.
+%This heuristic also makes sence without the described optimization but the potential benefit is larger with this optimization as the traversial of base nodes makes up a larger portion of critical section time with the optimization due to the fact that scanning of items in the critical section is avoided.
+%% TODO edit end
+
+
+\section{Related Work\label{sec:related}}
+%---------------------
+The CA tree is the only one of the previously proposed approaches for linearizable range queries~\cite{bronson2010practical,RangeQKArySeachTree,AvniLeaplist,CFRangeQueries,ChatterjeeLFRangeQueries,BasinKiWi} that dynamically changes the synchronization granularity to optimize for the conflicting requirements of range queries of different sizes and single-key operations~\cite{CATreeLCPC}.
+
+The \emph{SnapTree} by Bronson~\etal~\cite{bronson2010practical} has an efficient linearizable clone operation that returns a copy of the data structure from which a range query operation can easily be derived.
+\emph{SnapTree}'s clone operation waits for active update operations and forces subsequent update operations to copy nodes lazily before node modifications so that the copy is not modified.
+The behavior of \emph{SnapTree} resembles the behavior of the data structure implemented from a single mutable reference to an immutable data structure (that is discussed in Section~\ref{sec:intro}) when range queries are common. % and is  an example of that kind of aproach
+The \emph{SnapTree} can thus serve as an example of the coarse-grained approach for doing range queries.
+
+The lock-free \kary{} search tree is an unbalanced external search tree with up to $k$ keys stored in every node~\cite{NBKASearchTree}. %~\cite{herlihy2012art}
+Range queries in \kary{} search trees are performed by doing a read scan and a validation scan of the immutable leaf nodes containing items in the range~\cite{RangeQKArySeachTree}.
+The range query operation needs to retry if the validation scan fails.
+%% \kary{}'s range queries can  from starvation of range queries; see~\cite{BasinKiWi}.
+The \kary{} is an example of the fine-grained approach discussed in Section~\ref{sec:intro}.
+Another example of this fine-grained approach based on software transactional memory is the Leaplist~\cite{AvniLeaplist}.
+  
+Chatterjee has proposed a general method for doing range queries in lock-free ordered set data structures~\cite{ChatterjeeLFRangeQueries} based on the work by Erez and Shahar~\cite{Petrank2013}.
+Unfortunately, the scalability of Chatterjee's method suffers from the global sequential hot spot in the list of range-collector objects that all range queries have to write to in the worst case. 
+
+The \emph{KiWi} data structure by Basin \etal~\cite{BasinKiWi} supports wait-free range queries and lookup operations as well as lock-free update operations. %~\cite{herlihy2012art}
+Update operations help range queries by storing multiple versions of inserted items when it is needed for the range queries.
+Similarly to Robertson's data structure~\cite{CFRangeQueries}, \emph{KiWi}'s range queries atomically increment a global version counter which is used by update operations to decide if storing an additional version is necessary.
+\emph{KiWi}'s global version number counter is bound to become a scalability bottleneck with a high enough level of parallelism. %Unfortunately, x
+Similarly to the treap based CA tree, \emph{KiWi} tries to improve cache locality by storing items in arrays that can store up to $k$ items.
+%KiWi also pay a price for the wait-free range queries in that update operations performance is reduced as they need to help a range query operations.
+
+A fundamental difference between the other efficient methods for range queries in ordered set data structures and the optimized CA tree is the time spent by range queries reading shared mutable data and thus the time in which conflicts with update operations can happen.
+In the other methods~\cite{RangeQKArySeachTree,AvniLeaplist,CFRangeQueries,CATreeLCPC,ChatterjeeLFRangeQueries,BasinKiWi}, this time is at least linear in the number of items inside the range while the optimized CA tree can do much better as is described in Section~\ref{immopt}.
+
+%% Obviously, one can also derive an ordered set data structure with range query support from a single reference to an immutable data structure.
+%% Range queries and lookups simply read the reference and perform the operation in the immutable data structures while update operations repeatedly tries to update the reference using an atomic compare-and-swap operation until the update succeeds.
+%% This approach does not scale when concurrent updates are common due to the scalability bottleneck that exist in the updating of the shared reference.
+%% The CA~tree with the immutable data structure optimization eliminate this problem by splitting the immutable data between several base nodes when it is motivated by high contention.
+
+%We will here focus on describing the most recently suggested data structures and methods for performing range queries in ordered set data structukres.
+%The reader is refered
+
+
+\section{Evaluation\label{sec:eval}}
+%-------------------
+We now experimentally evaluate the optimized CA tree implementation using the immutable treap described in Section~\ref{immoptimpl} (\emph{Im-Tr-CA}).
+\emph{Im-Tr-CA} will be compared to the recently proposed methods for doing linearizable range queries in ordered sets: \emph{SnapTree}~\cite{bronson2010practical}, \kary{}~\cite{RangeQKArySeachTree}, Chatterjee's method applied to a lock-free skiplist~\cite{ChatterjeeLFRangeQueries} (\emph{ChatterjeeSL}), \emph{KiWi}~\cite{BasinKiWi} and the two CA tree variants that use a mutable skiplist with fat nodes (\emph{SL-CA}) and a mutable AVL tree (\mbox{\emph{AVL-CA}}) as sequential data structures~\cite{CATreeLCPC}. % and the optimization described in Section~\ref{immopt}
+The lock-free skiplist, called ConcurrentSkipListMap, from the Java library that only supports range queries that are not linearizable (\emph{NonAtomicSL}) is also included in the comparison.
+All data structures were provided by their respective authors and are implemented in Java.
+The maximum number of items in the nodes ($k$) is set to 64 for \kary, \emph{Im-Tr-CA} and \emph{SL-CA} as this value has previously been shown to give good results~\cite{RangeQKArySeachTree}.
+\emph{KiWi}'s constants are set as described in the \emph{KiWi} paper~\cite{BasinKiWi}.
+
+The benchmarks were run on a machine with four Intel(R) Xeon(R) E5-4650 CPUs (2.70GHz each with eight cores and hyperthreading, giving a total of 32 actual and 64 logical cores), turbo boost turned off, 128GB of~RAM, running Linux 3.16.0-4-amd64 and Oracle JVM~1.8.0\_131 (with the JVM flags -Xmx8g -Xms8g -XX:+UseCondCardMark -server -d64).
+Each data point comes from the average of three measurements runs of 10 seconds each that were preceded by 3 warm up runs, also of 10 seconds each.
+The purpose of the warm up runs is to give the just-in-time compiler enough time to compile the code.
+Error bars showing the minimum and maximum measurements are displayed when they are large enough to be seen.
+
+
+
+The keys for the operations lookup, insert and remove as well as the starting keys for range queries are randomly generated from a range of size $S$.
+The data structure is pre-filled before the start of each benchmark run by performing $S/2$ random insert operations.
+In all experiments presented in the main part of this paper $S = 10^6$.
+The interested reader can find results for $S = 10^5$ and $S = 10^7$ in the appendix of this paper.
+Range queries calculate the sum of the items in the range and the number of items in the range.
+As a sanity check, the average number of items that are traversed per range query is calculated and checked against the expected value.
+%-----------------------------------------
+%--------------------------------------------------------------------------------------------
+\begin{figure}[b]
+  \centering
+  \newcommand{\graphheight}{.21\textheight}
+  \begin{subfigure}[t]{4.55cm}
+    \centering
+    \includegraphics[height=\graphheight]{{{benchmark_graphs/no@3@10@3@10@ALL@1000000@500000@0.55@0.25@10@0.0@0}}}
+    \caption{\textsf{w:20\% r:55\% q:25\%-10}}\label{fig:randr10}		
+  \end{subfigure}
+  \begin{subfigure}[t]{4.55cm}
+    \centering
+    \includegraphics[height=\graphheight]{{{benchmark_graphs/no@3@10@3@10@ALL@1000000@500000@0.55@0.25@1000@0.0@0}}}
+    \caption{\textsf{w:20\% r:55\% q:25\%-1000}}\label{fig:randr1000}
+  \end{subfigure}
+  \begin{subfigure}[t]{4.55cm}
+    \centering
+    \includegraphics[height=\graphheight]{{{benchmark_graphs/no@3@10@3@10@ALL@1000000@500000@0.55@0.25@100000@0.0@0}}}
+    \caption{\textsf{w:20\% r:55\% q:25\%-100000}}\label{fig:randr100000}
+  \end{subfigure}
+  \caption{Throughput (operations/$\mu$s) on the y-axis and thread count on the x-axis.}
+  \label{fig:randrangeq}
+\end{figure} 
+\subparagraph{The Random Operations Benchmark} 
+This benchmark measures throughput of a mix of operations performed by $N$ threads.
+In all captions, benchmark scenarios are described by strings of the form \mbox{\textsf{w:$A$\% r:$B$\% q:$C$\%-$R$}}, meaning that the benchmark performs $(A/2)$\% insert, $(A/2)$\% remove, $B$\% lookup operations and $C$\% range queries of maximum range size $R$.
+The range sizes are randomly set to values between 1 and $R$.
+
+\figurename~\ref{fig:randrangeq} shows the results from three scenarios with increasing range sizes.
+In the scenario with small range queries of maximum size 10 (\figurename~\ref{fig:randr10}), the best performing data structures (the CA trees and \kary{}) are almost indistinguishable.
+\emph{ChatterjeeSL} and \emph{KiWi} that have a global scalability bottleneck, as explained in the previous section, both scale worse in this scenario.
+\emph{Im-Tr-CA} scales well in this scenario due to its ability to adapt the sizes of its immutable parts but does not get much benefit from its quick traversal of shared mutable data as conflicts between threads are rare for all data structures in this scenario. % and the range query critical sections are relatively short also in the other data structures.
+
+Conflicts are still relatively rare in the scenario with range queries of maximum size 1000 (\figurename~\ref{fig:randr1000}).
+The top performing data structures in this scenario (\emph{Im-Tr-CA}, \emph{SL-CA}, \emph{KiWi} and \kary{}) are those with cache locality friendly nodes that store several items in arrays.
+However, \emph{Im-Tr-CA} and \emph{SL-CA}, that adapt their synchronization granularity to the scenario at hand, outperform \emph{KiWi} and \kary{} with a wide margin in this scenario.
+
+The scenario that has large range queries of maximum size 100000 (\figurename~\ref{fig:randr100000}) shows the distinguishing feature of \emph{Im-Tr-CA} that outperforms all the other data structures with a large margin.
+Conflicts between range queries and update operations are very likely with these large range queries but the conflicts are significantly less costly in \emph{Im-Tr-CA} due to its short critical sections, as is explained in Section~\ref{immopt}.
+%-----------------------------------------
+\subparagraph{Separate Threads for Range Queries and Updates}
+Most of the time is spent doing range queries when large range queries are used in the random operations benchmark.
+Thus, another benchmark is needed to measure the data structures' ability to handle large range queries concurrently with frequent update operations.
+To this end, we use a similar benchmark to the one developed by the \emph{KiWi} authors.
+This benchmark is motivated by large scale applications that require quick updates of a data set while other threads do large linearizable range queries concurrently (for analytics)~\cite{BasinKiWi}.
+In this benchmark, half the threads do update operations (insert and remove with equal probability) while the other half do range queries with a range of fixed size.
+The throughput for updates is presented separately from the range query throughput so that one can study the performance of these operations separately.
+Note that in the graphs that show the range query throughput, the number of operations per $\mu$s multiplied by the range query size is shown on the y-axis to make the graphs more readable.
+\begin{figure}[t] 
+  \centering
+  \newcommand{\graphheight}{.22\textheight}
+  \begin{subfigure}[t]{6.9cm}
+    \centering
+    \includegraphics[height=\graphheight]{{{benchmark_graphs/no@3@10@3@10@ALL@1000000@500000@32000_range}}}
+    \caption{\textsf{Range queries, range size 32K (parallel updates)}}\label{fig:threadsseprange}	
+  \end{subfigure}
+  \begin{subfigure}[t]{6.9cm}
+    \centering
+    \includegraphics[height=\graphheight]{{{benchmark_graphs/no@threads32_1000000_range}}}
+    \caption{\textsf{Range queries 16 threads (parallel updates)}}\label{fig:rangeseprange}
+  \end{subfigure}
+
+  \begin{subfigure}[t]{6.9cm}
+    \centering
+    \includegraphics[height=\graphheight]{{{benchmark_graphs/no@3@10@3@10@ALL@1000000@500000@32000_put_marg}}}
+    \caption{\textsf{Updates (parallel range queries, range size 32K)}}\label{fig:threadssepput}
+  \end{subfigure}
+    \begin{subfigure}[t]{6.9cm}
+    \centering
+    \includegraphics[height=\graphheight]{{{benchmark_graphs/no@threads32_1000000_put_marg}}}
+    \caption{\textsf{Updates 16 threads (parallel range queries)}}\label{fig:rangesepput}
+  \end{subfigure}
+  \caption{Results for benchmark with separate threads doing updates and range queries.}
+  \label{fig:sepupdaterangeqtheads}
+\end{figure}
+
+\figurename~\ref{fig:threadsseprange} and \figurename~\ref{fig:threadssepput} show the results of this benchmark with a range query size of 32K and with varying thread counts.
+In \figurename~\ref{fig:rangeseprange} and \figurename~\ref{fig:rangesepput}, the thread count is fixed to 32 (16 updaters and 16 threads doing range queries) and the x-axis shows varying range query sizes.
+First of all, \emph{Im-Tr-CA} with its short range query critical section is overall the fastest data structure in the scenarios.
+\emph{KiWi} is the second most performant data structure in the scenarios with range query sizes larger than 2000. % as the update operation performance of \emph{CA-SL} and \emph{CA-AVL} decline with larger range queries
+The bumpy performance of \emph{CA-SL} in \figurename~\ref{fig:rangeseprange} can be explained by the fact that the range queries acquire the base node locks in read-mode which enables concurrent range queries to bypass waiting update operations and take over the lock.
+%This is done to increase parallelism as several threads can hold a lock in read-mode concurrently.
+\emph{CA-SL} thus provides good throughput for range queries with a range size of 512 because conflicts are rare and with a range size of 128K as ``conflicts'' with other range queries that have already acquired the relevant base nodes are common. % but worse in between
+%
+\emph{ChatterjeeSL}'s and \emph{KiWi}'s update operations need to read the RangeCollector list (\emph{ChatterjeeSL}) or the global version number (\emph{KiWi}) which are updated by range queries.
+The more frequent updates of these global objects with smaller range queries can explain the slight partial upward trend that exists for \emph{ChatterjeeSL} and \emph{KiWi} in Figure~\ref{fig:rangesepput}.
+%The upward trend for \emph{ChatterjeeSL} and partially for \emph{KiWi} in Figure~\ref{fig:rangesepput} can be explained by that these data structures' insert operation need to read the global version number or the RangeCollector list which are updated more frequently with more frequent range queries.  
+\kary{}'s range queries are starved by update operations in the scenarios with large range queries.
+The \emph{SnapTree}'s operations are slow in most scenarios due to its coarse-grained approach for doing range queries, but the \emph{SnapTree}'s performance is better in scenarios with larger and less frequent range queries.
+
+\tablename~\ref{tab:nodestats} shows the average number of base nodes and the number of base nodes traversed per range query in \emph{Im-Tr-CA} after the benchmark runs of the scenarios displayed in \figurename~\ref{fig:rangeseprange} and \figurename~\ref{fig:rangesepput}.
+It is evident from the table data that \emph{Im-Tr-CA}'s range queries spend a very short time traversing shared mutable data even for large range queries (e.g. approximately the time it takes to traverse 13 base nodes in the case with range queries of size 32K).
+After the base nodes have been traversed, the collected immutable data can be traversed without any need to care about other threads and without disturbing other threads.
+%%This is very different from the other data structures as they need to traverse at least $\mathcal{O}(r)$ shared mutable nodes, where $r$ is the number of items in the range.
+ 
+%The t\emph{Im-Tr-CA} can perform so well on the scenarios with large range queries is that its range queries spend a short time reading shared mutable data compared to the other data structures.
+
+ \begin{table}[h]%\footnotesize  
+  \caption{Statistics for \emph{Im-Tr-CA} in the scenarios displayed in \figurename~\ref{fig:rangeseprange} and \figurename~\ref{fig:rangesepput}.}
+  \label{tab:nodestats}
+  \begin{adjustbox}{max width=\textwidth}
+      \begin{tabular}{c|cccccccccc} %%\hline
+      Range Size  & 2 & 4 & 8 & 32 & 128 & 512 & 2K & 8K & 32K & 128K \\\hline
+      \# base nodes & 2.5K & 2.1K & 1.7K & 1.0K & 590 & 390 & 310 & 310 & 390 & 430 \\ 
+      $\frac{\text{\# traversed base nodes}}{\text{\# range queries}}$ & 1.0 & 1.0 & 1.0 & 1.0 & 1.1 & 1.2 & 1.6 & 3.5 & 13 & 56 \\ %%\hline
+    \end{tabular}
+    \end{adjustbox}
+\end{table} 
+%% In \figurename~\ref{fig:rangeseprange} and \figurename~\ref{fig:rangesepput} that shows varying range sizes, Im-Tr-CA is able to increase the number of items processed per time unit up to very large range queries.
+%% This may seem surprising at first.
+%% After investigation it was found that number of base nodes (and thus the number of immutable parts) drops with increasing range size due to the heuristic explained in Section~\ref{}.
+%% This leads to that in the scenarios with larger range queries, range queries can traverse more items per traversed base node which explain the higher rate of item traversal in the scenarios with larger range queries.
+%% Unfortunately, the fewer base nodes also contribute to more conflicts in update operations which can explain the small drop in update operation throughput that can be seen in \figurename~\ref{}. 
+%----------------------------------------------------------------------------------
+%yes@3@10@3@10@ALL@1000000@500000@32000_put.pdf
+%yes@3@10@3@10@ALL@1000000@500000@32000_range.pdf
+%yes@threads62put.pdf 	yes@threads62range.pdf
+ \section{Conclusion\label{sec:conc}}
+ A new CA tree variant that makes use of an immutable data structure has been presented.
+ The advantage of the new CA tree variant over the CA tree variants that use mutable data structures as the sequential data structure component is that the new variant drastically reduces the time period in which conflicts between large range queries and other operations can happen.
+ Compared to all other data structures with linearizable range query support, the CA trees have the advantage that they dynamically adapt the synchronization granularity to fit the workload at hand.
+ The experimental comparison shows that the presented implementation's quick traversal of shared mutable data and cache friendly design  makes the implementation outperform the best of the other data structures with a wide margin in scenarios with large range queries.
+ Furthermore, the new CA tree variant also performs better or close to the best of the other data structures in scenarios with small range queries due to its ability to dynamically change its synchronization granularity.  
+ As future work, we plan to design and evaluate a lock-free CA tree variant.
+ A lock-free CA tree variant could potentially give even better performance as it could avoid priority inversions and other lock related problems.
+ 
+
+
+%%  A new CA tree variant that make use of an immutable data structure has been presented.
+%% The advantage of the new CA tree variant over the CA tree variants that use mutable data structures as the CA tree's sequential data structure component is that the new variant drastically reduce the time in which conflicts between large range quereis and other operations can happen.
+%CA trees using immutable data structures and one optimization that it enables have been evaluated.
+%% CA trees using immutable data structures dynamically adapt the synchronization granularity.
+%% This enables them to reduce conflicts between threads and for the ability of range queries and clone operations to quickly obtain immutable parts of the data structure.
+%% This enables their range query and lookup operation to drastically reduce the amount of time that they spend reading shared mutable data and thus the amount of conflicts with other threads.
+%% The proposed data structure can serve more than twice as many operations in many scenarios with large range queries while performing better or similar to competing data structures in scenarios with small range queries.
+
+\subparagraph*{Acknowledgments}
+
+Vincent Gramoli gave me the idea of looking into immutable data structures in combination with the CA tree.
+Amelie Lind, Martin Viklund, Stephan Brandauer, Andreas Löscher, Elias Castegren and Konstantinos Sagonas helped me improve the language.
+This work was supported by the Linnaeus centre of excellence UPMARC (Uppsala Programming for Multicore
+Architectures Research Center).
+%Konstantinos Sagonas gave me the freedom to do this work. 
+%The research was supported by the Linnaeus centre of excellence UPMARC~(\url{www.upmarc.se}).  % (\url{www.upmarc.se})
+ 
+\appendix
+\section{Source Code}
+The source code for the CA tree implementations and the benchmarks can be found online (\url{https://www.it.uu.se/research/group/languages/software/im_tr_ca}).
+
+\section{Results with Other Set Sizes}
+Results corresponding to the results in figures \ref{fig:randrangeq} and \ref{fig:sepupdaterangeqtheads} but with smaller set sizes (the key range size $S=10^5$) can be found in figures \ref{fig:randrangeq100000} and \ref{fig:sepupdaterangeqtheads100000}.
+The corresponding results for larger set sizes ($S=10^7$) can be found in figures \ref{fig:randrangeq10000000} and \ref{fig:sepupdaterangeqtheads10000000}.
+The statistics corresponding to the statistics in \tablename~\ref{tab:nodestats} but with the smaller and larger set sizes can be found in tables~\ref{tab:nodestats100000} and \ref{tab:nodestats10000000}.
+
+In the cases with the smallest set size ($S=10^5$), the ranges of size 32K and 128K span 32\% and 100\% of the set represented by the data structures; see \figurename~\ref{fig:sepupdaterangeqtheads100000}.
+\emph{Im-Tr-CA}'s range queries lock out update operations from the portion of the set that is covered by the range query.
+Even though this only happens for a short period of time as Table~\ref{tab:nodestats100000} shows, it still has a negative effect on update operations as \figurename~\ref{fig:rangesepput100000} shows.
+This is compensated by \emph{Im-Tr-CA}'s excellent performance for range queries in these scenarios as \figurename~\ref{fig:rangeseprange100000} shows.
+
+In the cases with the largest set size ($S=10^7$), the ranges span a smaller part of the sets represented by the data structures which explains why many of the other data structures are closer to \emph{Im-Tr-CA} in these scenarios; see figures~\ref{fig:randrangeq10000000} and \ref{fig:sepupdaterangeqtheads10000000}.
+%The results for the larger set size ($S=10^7$) show similar performance patterns as the results with $S = 10^6$.
+%The results for the smaller set size show similar performance patterns as the results with $S = 10^6$.
+%%\footnote{Note that the reason why $\frac{S/2}{\text{\# base nodes}} \times \frac{\text{\# traversed base nodes}}{\text{\# range queries}}$ is slightly smaller than the range size in some scenarios is that the CA tree initially only has one base node and the set size is initially smaller than $S/2$ as a portion of the $S/2$ insert operations performed in the pre-fill face collide with each other}
+%%
+%% Bibliography
+%%
+
+%% Either use bibtex (recommended), but commented out in this sample
+
+%\bibliography{dummybib}
+
+\bibliography{biblio}
+
+
+%100000
+\begin{figure}[b]
+  \centering
+  \newcommand{\graphheight}{.21\textheight}
+  \begin{subfigure}[t]{4.55cm}
+    \centering
+    \includegraphics[height=\graphheight]{{{benchmark_graphs/no@3@10@3@10@ALL@100000@50000@0.55@0.25@10@0.0@0}}}
+    \caption{\textsf{w:20\% r:55\% q:25\%-10}}\label{fig:randr10:100000}		
+  \end{subfigure}
+  \begin{subfigure}[t]{4.55cm}
+    \centering
+    \includegraphics[height=\graphheight]{{{benchmark_graphs/no@3@10@3@10@ALL@100000@50000@0.55@0.25@1000@0.0@0}}}
+    \caption{\textsf{w:20\% r:55\% q:25\%-1000}}\label{fig:randr1000:100000}
+  \end{subfigure}
+  \begin{subfigure}[t]{4.55cm}
+    \centering
+    \includegraphics[height=\graphheight]{{{benchmark_graphs/no@3@10@3@10@ALL@100000@50000@0.55@0.25@100000@0.0@0}}}
+    \caption{\textsf{w:20\% r:55\% q:25\%-100000}}\label{fig:randr100000:100000}
+  \end{subfigure}
+  \caption{Results with key range of size $10^5$ which corresponds to a set size of approximately $5\times 10^4$. Throughput (operations/$\mu$s) on the y-axis and thread count on the x-axis.}
+  \label{fig:randrangeq100000}
+\end{figure} 
+\begin{figure}[t] 
+  \centering
+  \newcommand{\graphheight}{.22\textheight}
+  \begin{subfigure}[t]{6.9cm}
+    \centering
+    \includegraphics[height=\graphheight]{{{benchmark_graphs/no@3@10@3@10@ALL@100000@50000@32000_range}}}
+    \caption{\textsf{Range queries, range size 32K (parallel updates)}}\label{fig:threadsseprange100000}	
+  \end{subfigure}
+  \begin{subfigure}[t]{6.9cm}
+    \centering
+    \includegraphics[height=\graphheight]{{{benchmark_graphs/no@threads32_100000_range}}}
+    \caption{\textsf{Range queries 16 threads (parallel updates)}}\label{fig:rangeseprange100000}
+  \end{subfigure}
+
+  \begin{subfigure}[t]{6.9cm}
+    \centering
+    \includegraphics[height=\graphheight]{{{benchmark_graphs/no@3@10@3@10@ALL@100000@50000@32000_put_marg}}}
+    \caption{\textsf{Updates (parallel range queries, range size 32K)}}\label{fig:threadssepput100000}
+  \end{subfigure}
+    \begin{subfigure}[t]{6.9cm}
+    \centering
+    \includegraphics[height=\graphheight]{{{benchmark_graphs/no@threads32_100000_put_marg}}}
+    \caption{\textsf{Updates 16 threads (parallel range queries)}}\label{fig:rangesepput100000}
+  \end{subfigure}
+  \caption{Results for benchmark with separate threads doing updates and range queries with key range of size $10^5$ which corresponds to a set size of approximately $5\times 10^4$.}
+  \label{fig:sepupdaterangeqtheads100000}
+\end{figure}
+ \begin{table}[h]\footnotesize  
+  \caption{Statistics for \emph{Im-Tr-CA} in the scenarios displayed in \figurename~\ref{fig:rangeseprange100000} and \figurename~\ref{fig:rangesepput100000}.\label{tab:nodestats100000}}
+      \begin{tabular}{c|cccccccccc} %%\hline
+      Range Size  & 2 & 4 & 8 & 32 & 128 & 512 & 2K & 8K & 32K & 128K \\\hline
+      \# base nodes & 890 & 720 & 570 & 330 & 190 & 120 & 97 & 130 & 90 & 96 \\ 
+      $\frac{\text{\# traversed base nodes}}{\text{\# range queries}}$ & 1.0 & 1.0 & 1.1 & 1.1 & 1.2 & 1.6 & 3.0 & 11 & 27 & 98 \\ %%\hline
+    \end{tabular}
+ \end{table}
+
+
+
+ %1000000
+ \begin{figure}[b]
+  \centering
+  \newcommand{\graphheight}{.21\textheight}
+  \begin{subfigure}[t]{4.55cm}
+    \centering
+    \includegraphics[height=\graphheight]{{{benchmark_graphs/no@3@10@3@10@ALL@10000000@5000000@0.55@0.25@10@0.0@0}}}
+    \caption{\textsf{w:20\% r:55\% q:25\%-10}}\label{fig:randr10:10000000}		
+  \end{subfigure}
+  \begin{subfigure}[t]{4.55cm}
+    \centering
+    \includegraphics[height=\graphheight]{{{benchmark_graphs/no@3@10@3@10@ALL@10000000@5000000@0.55@0.25@1000@0.0@0}}}
+    \caption{\textsf{w:20\% r:55\% q:25\%-1000}}\label{fig:randr1000:10000000}
+  \end{subfigure}
+  \begin{subfigure}[t]{4.55cm}
+    \centering
+    \includegraphics[height=\graphheight]{{{benchmark_graphs/no@3@10@3@10@ALL@10000000@5000000@0.55@0.25@100000@0.0@0}}}
+    \caption{\textsf{w:20\% r:55\% q:25\%-100000}}\label{fig:randr100000:10000000}
+  \end{subfigure}
+  \caption{Results with key range of size $10^7$ which corresponds to a set size of approximately $5 \times 10^6$. Throughput (operations/$\mu$s) on the y-axis and thread count on the x-axis.}
+\label{fig:randrangeq10000000}
+\end{figure}
+\begin{figure}[t] 
+  \centering
+  \newcommand{\graphheight}{.22\textheight}
+  \begin{subfigure}[t]{6.9cm}
+    \centering
+    \includegraphics[height=\graphheight]{{{benchmark_graphs/no@3@10@3@10@ALL@10000000@5000000@32000_range}}}
+    \caption{\textsf{Range queries, range size 32K (parallel updates)}}\label{fig:threadsseprange10000000}	
+  \end{subfigure}
+  \begin{subfigure}[t]{6.9cm}
+    \centering
+    \includegraphics[height=\graphheight]{{{benchmark_graphs/no@threads32_10000000_range}}}
+    \caption{\textsf{Range queries 16 threads (parallel updates)}}\label{fig:rangeseprange10000000}
+  \end{subfigure}
+
+  \begin{subfigure}[t]{6.9cm}
+    \centering
+    \includegraphics[height=\graphheight]{{{benchmark_graphs/no@3@10@3@10@ALL@10000000@5000000@32000_put_marg}}}
+    \caption{\textsf{Updates (parallel range queries, range size 32K)}}\label{fig:threadssepput10000000}
+  \end{subfigure}
+    \begin{subfigure}[t]{6.9cm}
+    \centering
+    \includegraphics[height=\graphheight]{{{benchmark_graphs/no@threads32_10000000_put_marg}}}
+    \caption{\textsf{Updates 16 threads (parallel range queries)}}\label{fig:rangesepput10000000}
+  \end{subfigure}
+  \caption{Results for benchmark with separate threads doing updates and range queries with key range of size $10^7$ which corresponds to a set size of approximately $5 \times 10^6$.}
+  \label{fig:sepupdaterangeqtheads10000000}
+\end{figure}
+ \begin{table}[h]\footnotesize  
+  \caption{Statistics for \emph{Im-Tr-CA} in the scenarios displayed in \figurename~\ref{fig:rangeseprange10000000} and \figurename~\ref{fig:rangesepput10000000}.\label{tab:nodestats10000000}}
+      \begin{tabular}{c|cccccccccc} %%\hline
+      Range Size  & 2 & 4 & 8 & 32 & 128 & 512 & 2K & 8K & 32K & 128K \\\hline
+      \# base nodes & 6.0K & 5.3K & 4.5K & 2.9K & 1.8K & 1.2K & 900 & 860 & 1.0K & 1.1K \\ 
+      $\frac{\text{\# traversed base nodes}}{\text{\# range queries}}$ & 1.0 & 1.0 & 1.0 & 1.0 & 1.0 & 1.1 & 1.2 & 1.7 & 4.2 & 15 \\ %%\hline
+    \end{tabular}
+ \end{table}
+
+
+
+
+ 
+%% .. or use bibitems explicitely
+
+%% \nocite{Simpson}
+
+%% \begin{thebibliography}{50}
+%% \bibitem{Simpson} Homer J. Simpson. \textsl{Mmmmm...donuts}. Evergreen Terrace Printing Co., Springfield, Somewhere, USA, 1998
+%% \end{thebibliography}
+
+
+\end{document}

@@ -1,0 +1,141 @@
+\paragraph*{Available regularisation terms}\label{penaltiessec}
+%\textcolor{red}{The penalty terms in the library refer to the ones introduces in Equation (\ref{generic functional}) and (\ref{sparse coding}), $\Phi$ and $\Psi$. We now explain some of the possible choices and their properties.}
+
+The penalty terms $\Phi$ and $\Psi$ are the product between a regularisation parameter and, typically, a norm. The norm is used to impose a structure on the matrix, while the regularisation parameter, a positive scalar, weights the regularisation term influence on the solution.%regularised the solution should be.
+%All the penalties we present here are applied by row because of the structure of the matrices: on the rows of coefficients matrix lie the samples while on the rows of the dictionary matrix lie the atoms.
+
+In the following we show the possible choices for $\Phi$ and $\Psi$ applied on a generic matrix $\textbf{M}$ whose $i$-th row is indicated as $\textbf{M}_{i,:}$ and $j$-th column as $\textbf{M}_{:,j}$. Its generic element is denoted by $m_{ij}$. With the notation $\Phi|\Psi$ we indicate that the penalty can be applied or on the dictionary or on the coefficients or on both.\\
+\begin{itemize}
+%
+%
+%
+\item \texttt{L1Penalty} - \textbf{$\ell_1$ norm}
+\begin{equation}\label{l1penalty}
+\Phi|\Psi(\mathbf{M}) = \lambda \sum_i \|\mathbf{M}_{i,:}\|_1 =  \lambda \sum_i \sum_j |m_{ij}|
+\end{equation}
+Regularisation terms of this form, due to the geometrical meaning of the $\ell_1$ norm, force the solution to be sparse and, therefore, highly interpretable \cite{tibshirani1996regression}. If the penalty is applied on the dictionary it promotes a dictionary whose atoms have a low number of non-null components. For the coefficients, the penalisation promotes a reconstruction based only on few atoms of the dictionary, discarding the ones which give minor contribution to the original signal.
+
+The proximal operator related to this regulariser is
+\begin{equation}\label{proxl1}
+\text{prox}_{\Phi|\Psi}(m_{ij}) =
+\begin{cases}
+       m_{ij} - \lambda &\text{ if }m_{ij} > \lambda \\
+       0 & \text{ if }m_{ij} \in [-\lambda, \lambda] \\
+       m_{ij} + \lambda & \text{ if }m_{ij} < -\lambda
+\end{cases}
+\end{equation}
+%
+%
+%
+\item \texttt{L2Penalty} - \textbf{$\ell_2$ norm}
+\begin{equation}\label{l2penalty}
+\Phi|\Psi(\mathbf{M}) = \lambda \sum_{i}\left({\sum_j m_{ij}^2}\right)^\frac12
+\end{equation}
+
+Penalties of this form, as in the previous case, can be applied to both matrices $\mathbf{C}$ and $\mathbf{D}$.
+The $\ell_2$ regularisation term leads to the shrinkage of the components of each row, but, differently from the $\ell_1$ norm, it does not lead to a sparse solution \cite{tikhonov1977solutions}.
+
+The proximal operator is
+\begin{equation}\label{proxl2}
+\text{prox}_{\Phi|\Psi}(\mathbf{M}_{i,:}) = \text{max}(1 - \lambda/ \| \mathbf{M}_{i,:}\|_2, 0)\ \mathbf{M}_{i,:}
+\end{equation}
+%
+%
+%
+\item \texttt{ElasticNetPenalty}
+\begin{equation}\label{l1l2penalty}
+\Phi|\Psi(\mathbf{M}) = \sum_{i}\bigg[\alpha \lambda_1 \|\mathbf{M}_{i,:}\|_1 + (1 - \alpha)\lambda_2 \|\mathbf{M}_{i,:}\|_2 \bigg]
+\end{equation}
+Elastic Net can be preferable to $\ell_1$ norm, in the case of highly correlated variables, and also to $\ell_2$ norm since it inherits the possibility of finding a sparse solution \cite{zou2005regularization}.
+
+Here $\lambda_1$ and $\lambda_2$ weight the two norms separately while $\alpha \in [0,1]$ balances the contribution of the two terms. The proximal operator is
+
+\begin{equation}\label{proxen}
+\text{prox}_{\Phi|\Psi}( \mathbf{M}_{i,:}) = \left(\frac{1}{1 + \alpha\lambda_2}\right) \text{prox}_{\lambda_1 \|\cdot\|_1} ( \mathbf{M}_{i,:})
+\end{equation}
+%
+%
+\item \texttt{L0Penalty} - \textbf{$\ell_0$ pseudo-norm}
+\begin{equation}\label{l0penalty}
+\Phi|\Psi(\mathbf{M}) : \forall i\ \    \|\mathbf{M}_{i,:}\|_0 \leq s
+\end{equation}
+where $\|\mathbf{M}_{i,:}\|_0$ counts the number of non-zero elements in the row. The regularisation parameter $s\in \mathbb{N}$ impose the maximum number of non-null elements in $\mathbf{M}_{i,:}$, naturally leading to sparse results. The proximal operator is
+\begin{equation}
+\text{prox}_{\Phi|\Psi}(\textbf{M}_{i,:}) = \begin{cases} &m_{ij}, \text{ if } m_{ij} \in \mathcal{S} \\ &0, \text{ otherwise} \end{cases}
+\end{equation}
+where $\mathcal{S}$ is the set containing the first $s$ biggest components of $\textbf{M}_{i,:}$.\\
+%
+%
+%\item \textbf{TVL1Penalty} This term is the sum of two regularisations, Total Variation (TV) and $L^1$ norm, that act row-wise on the matrix. It is formalised as:
+%\begin{equation}\label{linfpenalty}
+%\text{TV-L1}(\mathbf{M}) = \sum_i \left[\lambda_{TV} \sum_j  |\mathbf{M}_{i,j} -\mathbf{M}_{i,j-1}| + \lambda_1 \|\mathbf{M}_{i,:}\|_1 \right]
+%\end{equation}
+%The two regularisation parameters act on the different part of the penalty in order to put more emphasis on one of the two parts. The penalty forces the row of the matrix to be piece-wise constant and to have few parts different from zero.
+%
+%Its proximal cannot be computed in closed form but requires an approximation. The algorithm we chose is the one presented in \cite{salzo2014alternating} which is able to approximate the prox up to a precision $\epsilon$ set by the user. \\
+%%
+%%
+%%
+\item \texttt{LInfPenalty} - \textbf{$\ell_\infty$ norm}
+\begin{equation}\label{linfpenalty}
+\Phi(\mathbf{M}) = \lambda \sum_j \|\mathbf{M}_{:,j}\|_\infty
+\end{equation}
+where $\|\mathbf{M}_{:,j}\|_\infty$ returns the maximum element in the column.
+This regularisation term acts column-wise only on the coefficients and it is useful in presence of a redundant dictionary \cite{tropp2006just}.
+
+The effect of this regulariser is to discard the atoms that overall have a low impact in the reconstruction while emphasising the atoms that, even if only in few samples, contribute largely.
+
+The proximal operator is
+\begin{equation}\label{proxlinf}
+    \text{prox}_{\Phi}(\mathbf{m}_j) = \mathbf{m}_j - \lambda \Pi_1(\mathbf{m}_j/\lambda)
+\end{equation}
+The algorithm for the projection on the $\ell_1$ ball is explained in \cite{duchi2008efficient}.\\
+%
+%
+%
+\item \texttt{GroupLassoPenalty} - \textbf{$\ell_{1,2}$ norm}
+\begin{equation}\label{group lasso penalty}
+\Phi|\Psi(\mathbf{M}) = \lambda \sum_i \sum_{g \in \mathcal{G}} \|\mathbf{M}_{i,g}\|_2
+\end{equation}
+where $\mathcal{G}$ is the set of the groups (i.e. the indices of the columns) defined by the user.
+
+For each row of the matrix $\mathbf{M}$ the penalty enforces all the values of a group to be selected or discarded together (i.e. all of them set to zero). The groups cannot be overlapping and they have to cover all the columns indices.
+Its proximal mapping is
+\begin{equation}\label{proxgrouplasso}
+    \text{prox}_{\Phi|\Psi}(\mathbf{M}_{i,:})_\mathcal{G} = \text{max}(1 - \lambda/ \| \mathbf{M}_{i,g}\|_2, 0)\ \mathbf{M}_{i,g} \ \ \text{for all } g \in \mathcal{G}
+\end{equation}
+
+\item \textbf{Additional user-implemented penalties}
+As introduces before DALILA is flexible in the sense that it allows to use different penalties without changing the minimisation
+ flow and it further allows the user to declare new non-considered penalties. More details are given in Appendix \ref{new penalty}. 
+\end{itemize}
+
+\vspace{0.5cm}
+Both for \texttt{DictionaryLearning} and \texttt{RepresentationLearning} the user can impose non-negativity constraints on the involved matrices.
+When this requirement is applied both on the dictionary and the coefficients it is called Non-negative Matrix Factorization % and it useful when, for example, we are analysing images or biological data
+\cite{lee1999learning}.
+%, alexandrov2013deciphering}.
+The non-negativity condition can, moreover, be imposed only on the coefficients in order to obtain a more
+interpretable contribution of the dictionary elements to the reconstruction of the original signal \cite{salzo2014alternating}. The projection is performed
+by setting to zero all the negative elements in the considered matrix.
+%
+%
+
+Furthermore, in the \texttt{DictionaryLearning} class the user can impose the
+normalization condition on the dictionary matrix, which is equivalent to set the euclidean norm of each row equal to 1.
+\begin{equation}\label{dictionary normalisation}
+\|\mathbf{D}_{i,:}\|_2 = 1\ \ \text{for all }i \in \{1, \dots, k\}
+\end{equation}
+
+%\\Concerning \texttt{DictionaryLearning} non-negativity can be imposed on both matrices, on the coefficients or on none of them, while for \texttt{RepresentationLearning} the non-negativity is a boolean flag.
+%\subsection{Projections}\label{projections}
+%In addition to all the penalties it is possible to perform two projections:
+
+
+%
+%\section{Model selection}
+%
+%
+%A common technique employed for this purpose is \emph{cross-validation}, a model validation method which assesses how well a model performs over a certain finite set of parameters sampled from an interval. Since the search can be done on multiple parameters at the time the best combination is chosen by inspecting the mean goodness score of the model.
+%
+%Since Dictionary Learning is an unsupervised problem we use the
